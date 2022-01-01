@@ -1,0 +1,25 @@
+{
+  "name": "yelp-clone",
+  "version": "1.0.0",
+  "description": "In the code along I will write all code and commit changes accordingly.\r The convention may change as the tutorial progresses. The goal is to progress with Git such that when the real project starts the learning curve will be lessened.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/binaryCookies/yelp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/binaryCookies/yelp/issues"
+  },
+  "homepage": "https://github.com/binaryCookies/yelp#readme",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
+    "mongoose": "^6.1.4"
+  }
+}

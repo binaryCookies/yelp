@@ -1,4 +1,6 @@
-//? Mongoose
+//? Mongoose VIDEO 409
+//? Step 2: export modules in seedHelpers file
+//? import modules to index.js
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
