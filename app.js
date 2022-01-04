@@ -8,6 +8,9 @@ const Campground = require("./models/campground");
 
 //?Mongoose - created db name yelp-camp from path
 const mongoose = require("mongoose");
+//? 423. A New EJS Tool For Layouts - ejs-mate
+const ejsMate = require("ejs-mate");
+
 //? VIDEO 413 npm i method-override (fake a put, patch or delete)
 const methodOverride = require("method-override");
 const campground = require("./models/campground.js");
@@ -38,6 +41,8 @@ app.get("/", (req, res) => {
 //   await camp.save();
 //   res.send(camp);
 // });
+//? 423. A New EJS Tool For Layouts - ejs-mate (found on gitHub)
+app.engine("ejs", ejsMate);
 //? HOME.EJS Route
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
