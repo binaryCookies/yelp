@@ -68,7 +68,7 @@ app.post("/campgrounds", async (req, res) => {
   res.redirect(`/campgrounds/${campground._id}`);
 });
 
-//? VIDEO 410 Campground Show Page - use id to lookup corresponding campground
+//? VIDEO 411 Campground Show Page - use id to lookup corresponding campground
 app.get("/campgrounds/:id", async (req, res) => {
   const campground = await Campground.findById(req.params.id);
   res.render("campgrounds/show", { campground });
