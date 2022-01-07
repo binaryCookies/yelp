@@ -25,6 +25,7 @@ const seedDB = async () => {
       //? VIDEO 409 testing data
       title: `${sample(descriptors)} ${sample(places)}`,
       //? VIDEO 427 Adding Images (modified model to match)
+      // image: "https://source.unsplash.com/collection/483251",
       image: "https://source.unsplash.com/collection/483251",
       description:
         " Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque velit, nemo maiores nesciunt voluptas perferendis cupiditate quia facere! Quas modi ullam rem quos enim voluptates? Natus assumenda alias architecto culpa.",
