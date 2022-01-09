@@ -1,26 +1,38 @@
-<%- layout('layouts/boilerplate') %> 
+<%- layout('layouts/boilerplate') %>
 
-    <h1>CAMPGROUND SHOW PAGE</h1>
-    
-    <!-- <p>campground.title and location from index.js which requires /campground.js-->
-    <h1><%= campground.title %></h1>
-    <h2><%= campground.location %></h2>
-   <p> <a href="/">Back Home</a></p>
-<%# Video 427. Adding images First changed model to accept image and description, then seeds, then show page%> 
-<img src="<%= campground.image %> " alt="" >
-<p><%= campground.description %> </p>
- 
-    <p>
-      <form action="/campgrounds/<%=campground._id %>?_method=DELETE" method="post">
-      <button>Delete</button></form>
-    </p>
-    <p>
-      <a href="/campgrounds/<%= campground._id %>/edit">Edit       
-      </p>
-    <p>
-      <a href="/campgrounds">All Campgrounds</a>
-    </p>
-  
-      <a href="/campgrounds/new">Add a new Campground</a>
-    </p>
-  
+<h1 class="text-center">CAMPGROUND SHOW PAGE</h1>
+<div class="row">
+  <div class="col-6 offset-3">
+    <div class="card-body">
+      <img src="<%= campground.image%> " class="card-img-top" alt="..." />
+      <div class="card-body">
+        <h5 class="card-title"><%= campground.title %></h5>
+        <p class="card-text"><%= campground.description %></p>
+      </div>
+
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item text-muted"><%= campground.location %></li>
+        <li class="list-group-item">$<%= campground.price %> per night</li>
+      </ul>
+      <div class="card-body mb-3">
+        <a
+          class="card-link btn btn-info"
+          href="/campgrounds/<%= campground._id %>/edit"
+          >Edit</a
+        >
+        <form
+          class="d-inline"
+          action="/campgrounds/<%=campground._id %>?_method=DELETE"
+          method="post"
+        >
+          <button class="btn btn-danger">Delete</button>
+          <a class="btn btn-dark" href="/campgrounds">All Campgrounds</a>
+          <a class="btn btn-secondary" href="/campgrounds/new"
+            >Add a new Campground</a
+          >
+        </form>
+      </div>
+      <div class="card-footer text-muted">2 days ago</div>
+    </div>
+  </div>
+</div>
