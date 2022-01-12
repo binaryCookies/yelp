@@ -4,6 +4,7 @@
 const express = require("express");
 const path = require("path");
 const app = express();
+const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
 
 //?Mongoose - created db name yelp-camp from path
@@ -70,6 +71,8 @@ app.get("/campgrounds/new", (req, res) => {
 app.post(
   "/campgrounds",
   catchAsync(async (req, res, next) => {
+    if (!req.body.campground)
+      throw new ExpressError("Invalid Campground Data", 400);
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
     await campground.save();
@@ -117,8 +120,16 @@ app.delete(
   })
 );
 
+//? VIDEO 444 More Errors
+app.all("*", (req, res, next) => {
+  next(new ExpressError("PAGE NOT FOUND", 404));
+});
+
 //? VIDEO 442 Basic Error Handling
 app.use((err, req, res, next) => {
+  //? destructured from Error (ExpressError)
+  const { statusCode = 500, message = "Something Went Wrong" } = err;
+  res.status(statusCode).send(message);
   res.send("OH BOY, SOMETHING WENT WRONG!");
 });
 
