@@ -10,6 +10,8 @@ const Campground = require("./models/campground");
 const mongoose = require("mongoose");
 //? 423. A New EJS Tool For Layouts - ejs-mate
 const ejsMate = require("ejs-mate");
+//? VIDEO 443. Defining Express Error Class
+const catchAsync = require("./utils/catchAsync");
 
 //? VIDEO 413 npm i method-override (fake a put, patch or delete)
 const methodOverride = require("method-override");
@@ -48,10 +50,13 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 //? All Campgrounds - INDEX Route
-app.get("/campgrounds", async (req, res) => {
-  const campgrounds = await Campground.find({});
-  res.render("campgrounds/index", { campgrounds });
-});
+app.get(
+  "/campgrounds",
+  catchAsync(async (req, res) => {
+    const campgrounds = await Campground.find({});
+    res.render("campgrounds/index", { campgrounds });
+  })
+);
 
 //? Video 412 new.ejs, Create New campground - Form
 app.get("/campgrounds/new", (req, res) => {
@@ -60,39 +65,61 @@ app.get("/campgrounds/new", (req, res) => {
 
 //? VIDEO 412 new.ejs - New and Create Submit Form
 //? (must parse data urlendoded...)
-app.post("/campgrounds", async (req, res) => {
-  const campground = new Campground(req.body.campground);
-  //  res.send(req.body); // testing post route
-  await campground.save();
-  console.dir(req);
-  res.redirect(`/campgrounds/${campground._id}`);
-});
+//? Video 442: Added next, try...
+//? VIDEO 443. Defining Express Error Class try and catch replaced
+app.post(
+  "/campgrounds",
+  catchAsync(async (req, res, next) => {
+    const campground = new Campground(req.body.campground);
+    //  res.send(req.body); // testing post route
+    await campground.save();
+    // console.dir(req);
+    res.redirect(`/campgrounds/${campground._id}`);
+  })
+);
 
 //? VIDEO 411 Campground Show Page - use id to lookup corresponding campground
-app.get("/campgrounds/:id", async (req, res) => {
-  const campground = await Campground.findById(req.params.id);
-  res.render("campgrounds/show", { campground });
-});
+app.get(
+  "/campgrounds/:id",
+  catchAsync(async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    res.render("campgrounds/show", { campground });
+  })
+);
 
 //? VIDEO 413 - Route Edit.ejs: edit and update
-app.get("/campgrounds/:id/edit", async (req, res) => {
-  const campground = await Campground.findById(req.params.id);
-  res.render("campgrounds/edit", { campground });
-});
+app.get(
+  "/campgrounds/:id/edit",
+  catchAsync(async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    res.render("campgrounds/edit", { campground });
+  })
+);
 //? VIDEO 413 - Route Edit.ejs: edit and update
-app.put("/campgrounds/:id", async (req, res) => {
-  const { id } = req.params;
-  const campground = await Campground.findByIdAndUpdate(id, {
-    ...req.body.campground,
-  });
-  res.redirect(`/campgrounds/${campground._id}`);
-  // res.send("it worked");
-});
+app.put(
+  "/campgrounds/:id",
+  catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const campground = await Campground.findByIdAndUpdate(id, {
+      ...req.body.campground,
+    });
+    res.redirect(`/campgrounds/${campground._id}`);
+    // res.send("it worked");
+  })
+);
 
-app.delete(`/campgrounds/:id`, async (req, res) => {
-  const { id } = req.params;
-  const campground = await Campground.findByIdAndDelete(id);
-  res.redirect("/campgrounds");
+app.delete(
+  `/campgrounds/:id`,
+  catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const campground = await Campground.findByIdAndDelete(id);
+    res.redirect("/campgrounds");
+  })
+);
+
+//? VIDEO 442 Basic Error Handling
+app.use((err, req, res, next) => {
+  res.send("OH BOY, SOMETHING WENT WRONG!");
 });
 
 app.listen(3000, (req, res) => {
