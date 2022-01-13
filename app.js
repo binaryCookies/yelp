@@ -13,8 +13,8 @@ const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 //? VIDEO 443. Defining Express Error Class
 const catchAsync = require("./utils/catchAsync");
-//? VIDEO 446. Joi Schema validations
-const Joi = require("joi");
+//? Video 447 Joi Validation Middleware
+const { campgroundSchema } = require("./schemas.js");
 //? VIDEO 413 npm i method-override (fake a put, patch or delete)
 const methodOverride = require("method-override");
 const campground = require("./models/campground.js");
@@ -31,6 +31,16 @@ db.once("open", () => {
 app.use(express.urlencoded({ extended: true }));
 //?VIDEO 413 npm i method-override
 app.use(methodOverride("_method"));
+const validateCampground = (req, res, next) => {
+  const { error } = campgroundSchema.validate(req.body);
+  console.log(error);
+  if (error) {
+    const msg = error.details.map((element) => element.message).join(",");
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
 
 //? HOME PAGE ROUTE
 app.get("/", (req, res) => {
@@ -71,35 +81,38 @@ app.get("/campgrounds/new", (req, res) => {
 //? VIDEO 443. Defining Express Error Class try and catch replaced
 app.post(
   "/campgrounds",
+  //? added validateCampground video 447
+  validateCampground,
   catchAsync(async (req, res, next) => {
     // if (!req.body.campground)
     //   throw new ExpressError("Invalid Campground Data", 400);
-    //? Video 446. Joi Schema validations -replaces above validation. This is not a mongoose schema. This will validate data before we attempt to save to mongoDB
-    const campgroundSchema = Joi.object({
-      campground: Joi.object({
-        title: Joi.string().required(),
-        price: Joi.number().required().min(0),
-        image: Joi.string().required(),
-        location: Joi.string().required(),
-        description: Joi.string().required(),
-      }).required(),
-    });
-    //turned off  video 446
-    // const result  = campgroundSchema.validate(req.body);
-    // console.log(result);
-    // if (result.error) {
+    //? Video 446. Joi Schema validations -replaces above validation. This is not a mongoose schema. This will validate data before we attempt to save to mongoDB (copied and moved above Section video 447)
+    // const campgroundSchema = Joi.object({
+    //   campground: Joi.object({
+    //     title: Joi.string().required(),
+    //     price: Joi.number().required().min(0),
+    //     image: Joi.string().required(),
+    //     location: Joi.string().required(),
+    //     description: Joi.string().required(),
+    //   }).required(),
+    // });
+    // //turned off  video 446 skip to below
+    // // const result  = campgroundSchema.validate(req.body);
+    // // console.log(result);
+    // // if (result.error) {
+    // //   //error is built-in (pretty sure from express)
+    // //   throw new ExpressError(result.error.details, 400);
+    // // }
+    // //? updated method: it will render in front end the error message - see error as I am logging to console. In production use a logger library
+    // const { error } = campgroundSchema.validate(req.body);
+    // console.log(error);
+    // if (error) {
+    //   const msg = error.details.map((element) => element.message).join(",");
     //   //error is built-in (pretty sure from express)
-    //   throw new ExpressError(result.error.details, 400);
+    //   throw new ExpressError(msg, 400);
+    //   // throw new ExpressError(result.error.details, 400); // turned off video 446
     // }
-    //? updated method: it will render in front end the error message - see error as I am logging to console. In production use a logger library
-    const { error } = campgroundSchema.validate(req.body);
-    console.log(error);
-    if (error) {
-      const msg = error.details.map((element) => element.message).join(",");
-      //error is built-in (pretty sure from express)
-      throw new ExpressError(msg, 400);
-      // throw new ExpressError(result.error.details, 400); // turned off video 446
-    }
+
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
     await campground.save();
@@ -129,6 +142,7 @@ app.get(
 //? VIDEO 413 - Route Edit.ejs: edit and update
 app.put(
   "/campgrounds/:id",
+  validateCampground,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, {
