@@ -120,17 +120,21 @@ app.delete(
   })
 );
 
-//? VIDEO 444 More Errors
+//? VIDEO 444 More Errors, * means every path, this only runs if none of the preceeding handlers did
 app.all("*", (req, res, next) => {
   next(new ExpressError("PAGE NOT FOUND", 404));
 });
 
 //? VIDEO 442 Basic Error Handling
 app.use((err, req, res, next) => {
-  //? destructured from Error (ExpressError)
-  const { statusCode = 500, message = "Something Went Wrong" } = err;
-  res.status(statusCode).send(message);
-  res.send("OH BOY, SOMETHING WENT WRONG!");
+  //? Viddeo 444: destructured from Error (ExpressError)
+  // const { statusCode = 500, message = "Something Went Wrong" } = err;
+  //? VIDEO 445: above is replaced with:
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message("Oh No, Something Went Wrong!");
+  //? VIDEO 445: changed .send(message) -> .render('error'),  passed {err} to error.ejs template
+  res.status(statusCode).render("error", { err });
+  // res.send("OH BOY, SOMETHING WENT WRONG!");
 });
 
 app.listen(3000, (req, res) => {
