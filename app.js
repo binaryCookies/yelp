@@ -13,7 +13,8 @@ const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 //? VIDEO 443. Defining Express Error Class
 const catchAsync = require("./utils/catchAsync");
-
+//? VIDEO 446. Joi Schema validations
+const Joi = require("joi");
 //? VIDEO 413 npm i method-override (fake a put, patch or delete)
 const methodOverride = require("method-override");
 const campground = require("./models/campground.js");
@@ -71,12 +72,39 @@ app.get("/campgrounds/new", (req, res) => {
 app.post(
   "/campgrounds",
   catchAsync(async (req, res, next) => {
-    if (!req.body.campground)
-      throw new ExpressError("Invalid Campground Data", 400);
+    // if (!req.body.campground)
+    //   throw new ExpressError("Invalid Campground Data", 400);
+    //? Video 446. Joi Schema validations -replaces above validation. This is not a mongoose schema. This will validate data before we attempt to save to mongoDB
+    const campgroundSchema = Joi.object({
+      campground: Joi.object({
+        title: Joi.string().required(),
+        price: Joi.number().required().min(0),
+        image: Joi.string().required(),
+        location: Joi.string().required(),
+        description: Joi.string().required(),
+      }).required(),
+    });
+    //turned off  video 446
+    // const result  = campgroundSchema.validate(req.body);
+    // console.log(result);
+    // if (result.error) {
+    //   //error is built-in (pretty sure from express)
+    //   throw new ExpressError(result.error.details, 400);
+    // }
+    //? updated method: it will render in front end the error message - see error as I am logging to console. In production use a logger library
+    const { error } = campgroundSchema.validate(req.body);
+    console.log(error);
+    if (error) {
+      const msg = error.details.map((element) => element.message).join(",");
+      //error is built-in (pretty sure from express)
+      throw new ExpressError(msg, 400);
+      // throw new ExpressError(result.error.details, 400); // turned off video 446
+    }
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
     await campground.save();
     // console.dir(req);
+    // console.log(req.body.campground);
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
@@ -122,7 +150,7 @@ app.delete(
 
 //? VIDEO 444 More Errors, * means every path, this only runs if none of the preceeding handlers did
 app.all("*", (req, res, next) => {
-  next(new ExpressError("PAGE NOT FOUND", 404));
+  next(new ExpressError("PAGE NOT FOUND. Dev-Mode: See stack trace", 404));
 });
 
 //? VIDEO 442 Basic Error Handling
