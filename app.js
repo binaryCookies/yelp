@@ -19,6 +19,7 @@ const { campgroundSchema } = require("./schemas.js");
 const methodOverride = require("method-override");
 const campground = require("./models/campground.js");
 const { findById } = require("./models/campground");
+const { STATUS_CODES } = require("http");
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
 
 const db = mongoose.connection;
@@ -31,9 +32,15 @@ db.once("open", () => {
 app.use(express.urlencoded({ extended: true }));
 //?VIDEO 413 npm i method-override
 app.use(methodOverride("_method"));
+
+//?VIDEO 447
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body);
-  console.log(error);
+  // console.log(error);
+  // console.dir(req.body.campground.title);
+  // console.dir(req.body);
+  // console.log(STATUS_CODES);
+  // console.log(req);
   if (error) {
     const msg = error.details.map((element) => element.message).join(",");
     throw new ExpressError(msg, 400);
@@ -44,6 +51,8 @@ const validateCampground = (req, res, next) => {
 
 //? HOME PAGE ROUTE
 app.get("/", (req, res) => {
+  // console.log(STATUS_CODES);
+  console.log(req);
   res.render("home");
 });
 // //? Initial Testing route
@@ -128,6 +137,7 @@ app.delete(
   `/campgrounds/:id`,
   catchAsync(async (req, res) => {
     const { id } = req.params;
+    console.log(req.params);
     const campground = await Campground.findByIdAndDelete(id);
     res.redirect("/campgrounds");
   })

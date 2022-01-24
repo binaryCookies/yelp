@@ -11,6 +11,13 @@ const CampgroundSchema = new Schema({
   price: Number,
   description: String,
   location: String,
+  //? VIDEO 464 Review model of one to many
+  review: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Review",
+    },
+  ],
 });
 
 // compiles the model from Schema
