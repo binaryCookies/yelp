@@ -12,7 +12,7 @@ const CampgroundSchema = new Schema({
   description: String,
   location: String,
   //? VIDEO 464 Review model of one to many
-  review: [
+  reviews: [
     {
       type: Schema.Types.ObjectId,
       ref: "Review",

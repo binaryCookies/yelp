@@ -6,7 +6,8 @@ const path = require("path");
 const app = express();
 const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
-
+//? VIDEO 466. Creating Reviews
+const Review = require("./models/review");
 //?Mongoose - created db name yelp-camp from path
 const mongoose = require("mongoose");
 //? 423. A New EJS Tool For Layouts - ejs-mate
@@ -144,6 +145,22 @@ app.delete(
 );
 
 //? VIDEO 444 More Errors, * means every path, this only runs if none of the preceeding handlers did
+
+//? VIDEO 466. CREATING REVIEWS
+app.post(
+  "/campgrounds/:id/reviews",
+  catchAsync(async (req, res) => {
+    // res.send("Step 1: THIS IS THE ROUTE TEST, SUBMIT TO FORM WITH SAME PATH");
+    const campground = await Campground.findById(req.params.id); // Step 2
+    // Step 3Add review model
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+  })
+);
+
 app.all("*", (req, res, next) => {
   next(new ExpressError("PAGE NOT FOUND. Dev-Mode: See stack trace", 404));
 });

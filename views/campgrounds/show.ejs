@@ -35,7 +35,11 @@
       <div class="card-footer text-muted">2 days ago</div>
       <h2>Leave A Review</h2>
       <!-- this mb-3 gets us off the footeer -->
-      <form action="" class="mb-3">
+      <form
+        action="/campgrounds/<%=campground._id%>/reviews"
+        method="post"
+        class="mb-3"
+      >
         <div class="mb-3">
           <label class="form-label" for="rating">Rating</label>
           <input

@@ -1,9 +1,9 @@
 //? VIDEO 464. Defining The Review Model
 //? one to many. one campground with many reviews
 
-const { string } = require("joi");
 const mongoose = require("mongoose");
-const { Schema } = mongoose.Schema;
+const Schema = mongoose.Schema;
+const { string } = require("joi");
 
 const reviewSchema = new Schema({
   body: String,
