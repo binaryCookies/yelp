@@ -14,13 +14,15 @@ const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 //? VIDEO 443. Defining Express Error Class
 const catchAsync = require("./utils/catchAsync");
-//? Video 447 Joi Validation Middleware
-const { campgroundSchema } = require("./schemas.js");
+//? Video 447 Joi Validation Middleware //? VIDEO 467 Review Validation
+const { campgroundSchema, reviewSchema } = require("./schemas.js");
+
 //? VIDEO 413 npm i method-override (fake a put, patch or delete)
 const methodOverride = require("method-override");
 const campground = require("./models/campground.js");
 const { findById } = require("./models/campground");
 const { STATUS_CODES } = require("http");
+const review = require("./models/review");
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
 
 const db = mongoose.connection;
@@ -42,6 +44,17 @@ const validateCampground = (req, res, next) => {
   // console.dir(req.body);
   // console.log(STATUS_CODES);
   // console.log(req);
+  if (error) {
+    const msg = error.details.map((element) => element.message).join(",");
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
+
+//? VIDEO 467 Validating Reviews
+const validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
   if (error) {
     const msg = error.details.map((element) => element.message).join(",");
     throw new ExpressError(msg, 400);
@@ -89,11 +102,12 @@ app.get("/campgrounds/new", (req, res) => {
 //? (must parse data urlendoded...)
 //? Video 442: Added next, try...
 //? VIDEO 443. Defining Express Error Class try and catch replaced
+//? VIDEDO 467 Validate reviews.
 app.post(
   "/campgrounds",
   //? added validateCampground video 447
   validateCampground,
-  catchAsync(async (req, res, next) => {
+  catchAsync(async (req, res) => {
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
     await campground.save();
@@ -104,10 +118,14 @@ app.post(
 );
 
 //? VIDEO 411 Campground Show Page - use id to lookup corresponding campground
+//? VIDEO 468 Displaying reviews, added populate
 app.get(
   "/campgrounds/:id",
   catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
+    const campground = await Campground.findById(req.params.id).populate(
+      "reviews"
+    );
+    // console.log(campground);
     res.render("campgrounds/show", { campground });
   })
 );
@@ -149,11 +167,13 @@ app.delete(
 //? VIDEO 466. CREATING REVIEWS
 app.post(
   "/campgrounds/:id/reviews",
+  validateReview,
   catchAsync(async (req, res) => {
     // res.send("Step 1: THIS IS THE ROUTE TEST, SUBMIT TO FORM WITH SAME PATH");
     const campground = await Campground.findById(req.params.id); // Step 2
     // Step 3Add review model
     const review = new Review(req.body.review);
+    // console.log(req.body.review);
     campground.reviews.push(review);
     await review.save();
     await campground.save();

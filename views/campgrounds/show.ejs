@@ -1,3 +1,4 @@
+<!-- video 467 validations: added requied, validated-form and no validate -->
 <%- layout('layouts/boilerplate') %>
 
 <h1 class="text-center">CAMPGROUND SHOW PAGE</h1>
@@ -38,7 +39,8 @@
       <form
         action="/campgrounds/<%=campground._id%>/reviews"
         method="post"
-        class="mb-3"
+        class="mb-3 validated-form"
+        novalidate
       >
         <div class="mb-3">
           <label class="form-label" for="rating">Rating</label>
@@ -59,13 +61,21 @@
             cols="30"
             rows="3"
             class="form-control"
+            required
           ></textarea>
+          <div class="valid-feedback">Looks good!</div>
         </div>
         <div>
           <button class="btn btn-success">Submit</button>
         </div>
         <div></div>
       </form>
+      <% for(let review of campground.reviews) {%>
+      <div class="mb-3">
+        <p>Rating: <%= review.rating %></p>
+        <p>Review: <%= review.body %></p>
+      </div>
+      <%} %>
     </div>
   </div>
 </div>
