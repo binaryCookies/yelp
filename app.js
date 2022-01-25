@@ -155,6 +155,7 @@ app.put(
 app.delete(
   `/campgrounds/:id`,
   catchAsync(async (req, res) => {
+    // res.send("it worked");
     const { id } = req.params;
     console.log(req.params);
     const campground = await Campground.findByIdAndDelete(id);
@@ -178,6 +179,18 @@ app.post(
     await review.save();
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
+  })
+);
+//? VIDEO 470 Delteing reviews
+app.delete(
+  "/campgrounds/:id/reviews/:reviewId",
+  catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    // MongoDB The $pull operator removes from an existing array all instances of a value or values that match a specified condition.
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(req.params.reviewId);
+    // res.send("delete me");
+    res.redirect(`/campgrounds/${id}`);
   })
 );
 
