@@ -1,4 +1,6 @@
 //* YELP - CODE ALONG - Start with git
+//* VIDEO 489 CONFIGURING SESSION - installed npm session npm i express-session, required session
+//* VIDEO 490 SETTING UP FLASH - install npm package connect-flash and required flash, added flash to routes -> campgrounds.js in creating new campgrounds, addid middleware in app.js, diplayed success in boilerplate
 
 //? Express
 const express = require("express");
@@ -8,12 +10,25 @@ const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
 //? VIDEO 466. Creating Reviews
 const Review = require("./models/review");
+
+//* Video 486 Breaking Out Routes
+const campgrounds = require("./routes/campgrounds");
+//* Video 489 Configuring Session
+const session = require("express-session");
+
+//*Video 490 Setting Up Flash
+const flash = require("connect-flash");
+
+const reviews = require("./routes/reviews");
+
 //?Mongoose - created db name yelp-camp from path
 const mongoose = require("mongoose");
 //? 423. A New EJS Tool For Layouts - ejs-mate
 const ejsMate = require("ejs-mate");
-//? VIDEO 443. Defining Express Error Class
-const catchAsync = require("./utils/catchAsync");
+
+//? VIDEO 443. Defining Express Error Class -> MUTED video 487 Breaking Out Review Routes
+// const catchAsync = require("./utils/catchAsync");
+
 //? Video 447 Joi Validation Middleware //? VIDEO 467 Review Validation
 const { campgroundSchema, reviewSchema } = require("./schemas.js");
 
@@ -23,6 +38,7 @@ const campground = require("./models/campground.js");
 const { findById } = require("./models/campground");
 const { STATUS_CODES } = require("http");
 const review = require("./models/review");
+
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
 
 const db = mongoose.connection;
@@ -36,32 +52,38 @@ app.use(express.urlencoded({ extended: true }));
 //?VIDEO 413 npm i method-override
 app.use(methodOverride("_method"));
 
-//?VIDEO 447
-const validateCampground = (req, res, next) => {
-  const { error } = campgroundSchema.validate(req.body);
-  // console.log(error);
-  // console.dir(req.body.campground.title);
-  // console.dir(req.body);
-  // console.log(STATUS_CODES);
-  // console.log(req);
-  if (error) {
-    const msg = error.details.map((element) => element.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
+//* VIDEO 488 Serving Static Assets - creating public directory
+app.use(express.static(path.join(__dirname, "public")));
+
+//* VIDEO 489 Configuring Sesssion - passing in object not in use, config will change after development on deployment, we wont use local store after development rather mongodb store
+const sessionConfig = {
+  secret: "thisshoulbeabettersecret",
+  resave: false,
+  saveUninitialized: true,
+  //*  Explainer: Date.now in millieseconds 1000 milleseconds in a second, 60 seconds in a minute, 60 minutes in an hour, 24 hours per day, 7 days per week
+  cookie: {
+    //* Extra security to prevent client side cross scripting
+    httpOnly: true,
+    //* Setting Cookie to expire in 1 week
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
 };
 
-//? VIDEO 467 Validating Reviews
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((element) => element.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
+app.use(session(sessionConfig));
+
+//*Video 490 Setting Up Flash - added flash to routes -> campgrounds.js in creating new campgrounds
+app.use(flash());
+
+//* whatever success from the res.locals.success is we will have access to (must be before our route handlers)
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  next();
+});
+
+//* Video 487 - prefixed routes as below
+app.use("/campgrounds", campgrounds);
+app.use("/campgrounds/:id/reviews", reviews);
 
 //? HOME PAGE ROUTE
 app.get("/", (req, res) => {
@@ -78,122 +100,14 @@ app.get("/", (req, res) => {
 //   await camp.save();
 //   res.send(camp);
 // });
+
 //? 423. A New EJS Tool For Layouts - ejs-mate (found on gitHub)
 app.engine("ejs", ejsMate);
 //? HOME.EJS Route
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-//? All Campgrounds - INDEX Route
-app.get(
-  "/campgrounds",
-  catchAsync(async (req, res) => {
-    const campgrounds = await Campground.find({});
-    res.render("campgrounds/index", { campgrounds });
-  })
-);
-
-//? Video 412 new.ejs, Create New campground - Form
-app.get("/campgrounds/new", (req, res) => {
-  res.render("campgrounds/new");
-});
-
-//? VIDEO 412 new.ejs - New and Create Submit Form
-//? (must parse data urlendoded...)
-//? Video 442: Added next, try...
-//? VIDEO 443. Defining Express Error Class try and catch replaced
-//? VIDEDO 467 Validate reviews.
-app.post(
-  "/campgrounds",
-  //? added validateCampground video 447
-  validateCampground,
-  catchAsync(async (req, res) => {
-    const campground = new Campground(req.body.campground);
-    //  res.send(req.body); // testing post route
-    await campground.save();
-    // console.dir(req);
-    // console.log(req.body.campground);
-    res.redirect(`/campgrounds/${campground._id}`);
-  })
-);
-
-//? VIDEO 411 Campground Show Page - use id to lookup corresponding campground
-//? VIDEO 468 Displaying reviews, added populate
-app.get(
-  "/campgrounds/:id",
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id).populate(
-      "reviews"
-    );
-    // console.log(campground);
-    res.render("campgrounds/show", { campground });
-  })
-);
-
-//? VIDEO 413 - Route Edit.ejs: edit and update
-app.get(
-  "/campgrounds/:id/edit",
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render("campgrounds/edit", { campground });
-  })
-);
-//? VIDEO 413 - Route Edit.ejs: edit and update
-app.put(
-  "/campgrounds/:id",
-  validateCampground,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, {
-      ...req.body.campground,
-    });
-    res.redirect(`/campgrounds/${campground._id}`);
-    // res.send("it worked");
-  })
-);
-
-app.delete(
-  `/campgrounds/:id`,
-  catchAsync(async (req, res) => {
-    // res.send("it worked");
-    const { id } = req.params;
-    console.log(req.params);
-    const campground = await Campground.findByIdAndDelete(id);
-    res.redirect("/campgrounds");
-  })
-);
-
 //? VIDEO 444 More Errors, * means every path, this only runs if none of the preceeding handlers did
-
-//? VIDEO 466. CREATING REVIEWS
-app.post(
-  "/campgrounds/:id/reviews",
-  validateReview,
-  catchAsync(async (req, res) => {
-    // res.send("Step 1: THIS IS THE ROUTE TEST, SUBMIT TO FORM WITH SAME PATH");
-    const campground = await Campground.findById(req.params.id); // Step 2
-    // Step 3Add review model
-    const review = new Review(req.body.review);
-    // console.log(req.body.review);
-    campground.reviews.push(review);
-    await review.save();
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-  })
-);
-//? VIDEO 470 Delteing reviews
-app.delete(
-  "/campgrounds/:id/reviews/:reviewId",
-  catchAsync(async (req, res) => {
-    const { id, reviewId } = req.params;
-    // MongoDB The $pull operator removes from an existing array all instances of a value or values that match a specified condition.
-    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-    await Review.findByIdAndDelete(req.params.reviewId);
-    // res.send("delete me");
-    res.redirect(`/campgrounds/${id}`);
-  })
-);
-
 app.all("*", (req, res, next) => {
   next(new ExpressError("PAGE NOT FOUND. Dev-Mode: See stack trace", 404));
 });

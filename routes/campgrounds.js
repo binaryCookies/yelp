@@ -55,10 +55,12 @@ router.post(
   "/",
   //? added validateCampground video 447
   validateCampground,
-  catchAsync(async (req, res) => {
+  catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
     await campground.save();
+    //* Video 490 Setting up Flash - added to our template to display flash msg
+    req.flash("success", "Successfully made a new campground");
     // console.dir(req);
     // console.log(req.body.campground);
     res.redirect(`/campgrounds/${campground._id}`);
@@ -99,5 +101,14 @@ router.put(
     // res.send("it worked");
   })
 );
-
+router.delete(
+  `/:id`,
+  catchAsync(async (req, res) => {
+    // res.send("it worked");
+    const { id } = req.params;
+    console.log(req.params);
+    const campground = await Campground.findByIdAndDelete(id);
+    res.redirect("/campgrounds");
+  })
+);
 module.exports = router;

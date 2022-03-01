@@ -1,6 +1,7 @@
-<!-- video 467 validations: added requied, validated-form and no validate -->
-<!-- video 468. removed off-set 3 thherefore removing the centering of page, card body, card mb-3, class card title and text -->
-<%- layout('layouts/boilerplate') %>
+<%# video 467 validations: added requied, validated-form and no validate %> <%#
+video 468. removed off-set 3 thherefore removing the centering of page, card
+body, card mb-3, class card title and text %> <%- layout('layouts/boilerplate')
+%>
 
 <h1 class="text-center">CAMPGROUND SHOW PAGE</h1>
 <div class="row">
@@ -37,10 +38,10 @@
       <div class="card-footer text-muted">2 days ago</div>
     </div>
   </div>
-  <!-- video 468 added new column -->
+  <%# video 468 added new column %>
   <div class="col-6">
     <h2>Leave A Review</h2>
-    <!-- this mb-3 gets us off the footeer -->
+    <%# this mb-3 gets us off the footeer %>
     <form
       action="/campgrounds/<%=campground._id%>/reviews"
       method="post"
@@ -75,13 +76,13 @@
       </div>
       <div></div>
     </form>
-    <!-- video 468 styling reviews -->
-    <% for(let review of campground.reviews) {%>
+    <%# video 468 styling reviews %> <% for(let review of campground.reviews)
+    {%>
     <div class="card mb-3">
       <div class="card-body">
         <h5 class="card-title">Rating: <%= review.rating %></h5>
         <p class="card-text">Review: <%= review.body %></p>
-        <!-- video 470 Deleteing reviews -->
+        <%# video 470 Deleteing reviews %>
         <form
           action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE"
           method="post"

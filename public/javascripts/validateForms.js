@@ -1,6 +1,10 @@
 //* VIDEO 488 SERVING STATIC ASSETS
 //* Moved bootstrap function from boilerplate.ejs - makes sense to group in public directory because its client side form validation
 
+//* Created public directory
+//*   Created public directory sub-folder javascripts & stylesheets
+//* Added to app.js access to public directory app.use(express.static(path.join(__dirname, "public")));
+
 // Example starter JavaScript for disabling form submissions if there are invalid fields
 (function () {
   "use strict";

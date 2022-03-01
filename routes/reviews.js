@@ -5,7 +5,7 @@
  ** required express, created router
  ** renamed app to router for each route
  ** required reviews path in app.js file
- ** prefixed routes - see app.use in app.ks
+ ** prefixed routes - see app.use in app.js
  ** copied catchAsync - edited the path to reflect the new loction
  ** Copied from app.js required Campground and require Review
  ** Cut validateReview middleware which requires expressError utility
