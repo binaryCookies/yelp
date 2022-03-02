@@ -1,6 +1,8 @@
 //* YELP - CODE ALONG - Start with git
 //* VIDEO 489 CONFIGURING SESSION - installed npm session npm i express-session, required session
 //* VIDEO 490 SETTING UP FLASH - install npm package connect-flash and required flash, added flash to routes -> campgrounds.js see in creating new campgrounds, added middleware in app.js, diplayed success in boilerplate
+//* VIDEO 494 FLASH SUCCESS PARTIAL - using bootstrap to flash messages in campgrounds.js, reviews.js
+//* VIDEO 495 FLASH ERROR PARTIALS - flash.ejs
 
 //? Express
 const express = require("express");
@@ -72,12 +74,14 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 
-//*Video 490 Setting Up Flash - added flash to routes -> campgrounds.js in creating new campgrounds
+//*Video 493 Setting Up Flash - added flash to routes -> campgrounds.js in creating new campgrounds
 app.use(flash());
 
 //* whatever success from the res.locals.success is we will have access to (must be before our route handlers)
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
+  //* Video 495 Flash Errors Partial
+  res.locals.error = req.flash("error");
   next();
 });
 

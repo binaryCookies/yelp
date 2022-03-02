@@ -59,7 +59,7 @@ router.post(
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
     await campground.save();
-    //* Video 490 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
+    //* Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
     req.flash("success", "Successfully made a new campground");
     res.redirect(`/campgrounds/${campground._id}`);
     // console.dir(req);
@@ -75,6 +75,11 @@ router.get(
     const campground = await Campground.findById(req.params.id).populate(
       "reviews"
     );
+    //* Video 495 Flash Error Partial - flash msg if campground not found
+    if (!campground) {
+      req.flash("error", "Cannot find that campground");
+      return res.redirect("/campgrounds");
+    }
     res.render("campgrounds/show", { campground });
     // console.log(campground);
   })
@@ -85,6 +90,11 @@ router.get(
   "/:id/edit",
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
+    //* Video 495 Flash Error Partial - flash msg if campground not found
+    if (!campground) {
+      req.flash("error", "Cannot find that campground");
+      return res.redirect("/campgrounds");
+    }
     res.render("campgrounds/edit", { campground });
   })
 );

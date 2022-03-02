@@ -13,4 +13,14 @@ if(success && success.length) {%>
   ></button>
   <%= success %>
 </div>
+<% } %> <%# VIDEO 495 FLASH ERROR PARTIALS%> <% if(error && error.length) {%>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+  <%= error %>
+</div>
 <% } %>
