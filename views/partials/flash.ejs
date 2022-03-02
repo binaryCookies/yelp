@@ -1,0 +1,16 @@
+<%#VIDEO 491 FLASH SUCCESS PARTIAL - improving the display of flash messages %>
+<%#Video 491 added Bootstrap alert using flash message success as the alert msg
+%> <%# 1. UPDATED success in boilerplate.ejs and replaced with include
+..partials/flash, Added logic to display alert when success msg has a length
+zero length is falsey, tip console.dir success to display what we have %> <%
+if(success && success.length) {%>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+  <%= success %>
+</div>
+<% } %>

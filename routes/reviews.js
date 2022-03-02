@@ -44,13 +44,14 @@ router.post(
   validateReview,
   catchAsync(async (req, res) => {
     // res.send("Step 1: THIS IS THE ROUTE TEST, SUBMIT TO FORM WITH SAME PATH");
-    const campground = await Campground.findById(req.params.id); // Step 2
+    const campground = await Campground.findById(req.params.id); // Step 2 test w/ console.log(req.params)
     // Step 3Add review model
     const review = new Review(req.body.review);
     // console.log(req.body.review);
     campground.reviews.push(review);
     await review.save();
     await campground.save();
+    req.flash("success", "Created a new review");
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
@@ -63,6 +64,7 @@ router.delete(
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(req.params.reviewId);
     // res.send("delete me");
+    req.flash("success", "Successfully deleted a review");
     res.redirect(`/campgrounds/${id}`);
   })
 );

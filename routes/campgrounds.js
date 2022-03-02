@@ -59,11 +59,11 @@ router.post(
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
     await campground.save();
-    //* Video 490 Setting up Flash - added to our template to display flash msg
+    //* Video 490 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
     req.flash("success", "Successfully made a new campground");
+    res.redirect(`/campgrounds/${campground._id}`);
     // console.dir(req);
     // console.log(req.body.campground);
-    res.redirect(`/campgrounds/${campground._id}`);
   })
 );
 
@@ -75,8 +75,8 @@ router.get(
     const campground = await Campground.findById(req.params.id).populate(
       "reviews"
     );
-    // console.log(campground);
     res.render("campgrounds/show", { campground });
+    // console.log(campground);
   })
 );
 
@@ -97,6 +97,8 @@ router.put(
     const campground = await Campground.findByIdAndUpdate(id, {
       ...req.body.campground,
     });
+    //* Video 494 Flash Success partial - flash update msg
+    req.flash("success", "Successfully updated the campground");
     res.redirect(`/campgrounds/${campground._id}`);
     // res.send("it worked");
   })
@@ -108,6 +110,7 @@ router.delete(
     const { id } = req.params;
     console.log(req.params);
     const campground = await Campground.findByIdAndDelete(id);
+    req.flash("success", "Successfully deleted campground");
     res.redirect("/campgrounds");
   })
 );

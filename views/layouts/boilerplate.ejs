@@ -15,6 +15,7 @@
       crossorigin="anonymous"
     />
   </head>
+
   <%# Video 426 Partial footer added bootstrap display flex, column and set view
   height on body %>
   <body class="d-flex flex-column vh-100">
@@ -43,7 +44,14 @@
         </div>
       </div>
     </nav> -->
-    <main class="container mt-5"><%=success%> <%- body %></main>
+
+    <%# VIDEO 491 SUCCESS PARTIAL: REMOVED SUCCESS Msg REPLACED WITH
+    PARTIALS/NAVBAR%>
+
+    <main class="container mt-5">
+      <%- include('../partials/flash') %> <%- body %>
+    </main>
+
     <%- include('../partials/footer')%>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"

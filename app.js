@@ -1,6 +1,6 @@
 //* YELP - CODE ALONG - Start with git
 //* VIDEO 489 CONFIGURING SESSION - installed npm session npm i express-session, required session
-//* VIDEO 490 SETTING UP FLASH - install npm package connect-flash and required flash, added flash to routes -> campgrounds.js in creating new campgrounds, addid middleware in app.js, diplayed success in boilerplate
+//* VIDEO 490 SETTING UP FLASH - install npm package connect-flash and required flash, added flash to routes -> campgrounds.js see in creating new campgrounds, added middleware in app.js, diplayed success in boilerplate
 
 //? Express
 const express = require("express");
@@ -55,7 +55,7 @@ app.use(methodOverride("_method"));
 //* VIDEO 488 Serving Static Assets - creating public directory
 app.use(express.static(path.join(__dirname, "public")));
 
-//* VIDEO 489 Configuring Sesssion - passing in object not in use, config will change after development on deployment, we wont use local store after development rather mongodb store
+//* VIDEO 489 Configuring Sesssion - passing in config object, config will change after development on deployment, we wont use local store after development rather mongodb store
 const sessionConfig = {
   secret: "thisshoulbeabettersecret",
   resave: false,
@@ -81,7 +81,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//* Video 487 - prefixed routes as below
+//* Video 487 - prefixed routes as below route handlers
 app.use("/campgrounds", campgrounds);
 app.use("/campgrounds/:id/reviews", reviews);
 
