@@ -5,7 +5,9 @@ const router = express.Router();
 // VIDEO 513
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/user");
-
+const { authenticate } = require("passport/lib");
+//VIDEO 514
+const passport = require("passport");
 router.get("/register", (req, res) => {
   res.render("users/register");
 });
@@ -32,4 +34,22 @@ router.post(
     res.redirect("/campgrounds");
   })
 );
+
+//* VIDEO 514 LOGIN ROUTES - passport.authenticate
+router.get("/login", (req, res) => {
+  return res.render("users/login");
+});
+// possible to use in addition to auth local we can use different route to auth google or twitter.
+router.post(
+  "/login",
+  passport.authenticate("local", {
+    failureFlash: true,
+    failureRedirect: "/login",
+  }),
+  (req, res) => {
+    req.flash("success", "Welcome Back");
+    res.redirect("/campgrounds");
+  }
+);
+
 module.exports = router;

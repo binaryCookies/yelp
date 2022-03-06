@@ -79,7 +79,7 @@ const sessionConfig = {
   cookie: {
     // Extra security to prevent client side cross scripting
     httpOnly: true,
-    //* Setting Cookie to expire in 1 week
+    // Setting Cookie to expire in 1 week
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
