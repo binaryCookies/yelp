@@ -3,6 +3,10 @@
 //* VIDEO 490 SETTING UP FLASH - install npm package connect-flash and required flash, added flash to routes -> campgrounds.js see in creating new campgrounds, added middleware in app.js, diplayed success in boilerplate
 //* VIDEO 494 FLASH SUCCESS PARTIAL - using bootstrap to flash messages in campgrounds.js, reviews.js
 //* VIDEO 495 FLASH ERROR PARTIALS - flash.ejs
+//* VIDEO 509 INTRODUCTION TO PASSPORT (passport is a librairy) - Auth basic summary -> set up min 4  routes, serve forms to login and register, routes todo the logging in and registration logout route, middleware to force you to login for certain routes, authorization to connect user to campgrounds,
+//* install packages npm passport-local-mongoose, passport-local (npm install passport mongoose passport-local-mongoose)
+//* VIDEO 510 CREATING OUR USER MODEL
+//* VIDEO 511 CONFIGURING PASSPORT: require: User model, passport, passport-local. Use: passport.initialize, passport.session, new LocalStrategy, passport.serializeUser, passport.deserializeUser. Hard coded new user to test Auth route. Register a user call User.register()
 
 //? Express
 const express = require("express");
@@ -41,6 +45,11 @@ const { findById } = require("./models/campground");
 const { STATUS_CODES } = require("http");
 const review = require("./models/review");
 
+//* VIDEO 511 CONFIGURING PASSPORT
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
+
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
 
 const db = mongoose.connection;
@@ -77,6 +86,15 @@ app.use(session(sessionConfig));
 //*Video 493 Setting Up Flash - added flash to routes -> campgrounds.js in creating new campgrounds
 app.use(flash());
 
+//* VIDEO 511 CONFIGURING PASSPORT - note passport.session should be used after app.use(session(sessionConfig))
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser()); // store in session
+passport.deserializeUser(User.deserializeUser()); // unstore in session
+// see static methods github docs passport-local-mongoose
+//****
+
 //* whatever success from the res.locals.success is we will have access to (must be before our route handlers)
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
@@ -84,6 +102,14 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error");
   next();
 });
+
+//* Video 511: test auth rout passport
+app.get("/fakeuser", async (req, res) => {
+  const user = new User({ email: "yanal@myemail.com", username: "yanal999" });
+  const newUser = await User.register(user, "monkey");
+  res.send(newUser);
+});
+//****
 
 //* Video 487 - prefixed routes as below route handlers
 app.use("/campgrounds", campgrounds);
