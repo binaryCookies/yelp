@@ -1,6 +1,7 @@
 //* VIDEO 510 CREATING OUR USER MODEL
 //* DOCS passport-local-mongoose: https://github.com/saintedlama/passport-local-mongoose
 //* DOCS passport-local: https://github.com/jaredhanson/passport-local
+//* DOCS passport-local: https://www.npmjs.com/package/passport-local-mongoose
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
