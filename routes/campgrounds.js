@@ -8,7 +8,7 @@
  ** Changed path from above copied to reflect we are in nested in routes folder
  ** Cut paste validateCampground to campgrounds.js
  ** Copied campgroundSchema (updated path deleted the reviewSchema) although it was working I followed the video
- **
+ ** VIDEO 515 new file middleware.js isLoggedIn Middleware Passport: using isAuthenticated on get/new, import middleware.js
  */
 
 const express = require("express");
@@ -17,6 +17,9 @@ const catchAsync = require("../utils/catchAsync");
 const { campgroundSchema } = require("../schemas.js");
 const ExpressError = require("../utils/ExpressError");
 const Campground = require("../models/campground");
+//* VIDEO 515 isLoggedIn
+const { isLoggedIn } = require("../middleware");
+
 //?VIDEO 447
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body);
@@ -43,7 +46,7 @@ router.get(
 );
 
 //? Video 412 new.ejs, Create New campground - Form
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
   res.render("campgrounds/new");
 });
 //? VIDEO 412 new.ejs - New and Create Submit Form
@@ -53,13 +56,14 @@ router.get("/new", (req, res) => {
 //? VIDEDO 467 Validate reviews.
 router.post(
   "/",
-  //? added validateCampground video 447
+  // added validateCampground video 447, isLoggedIn Video 515
+  isLoggedIn,
   validateCampground,
   catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
     await campground.save();
-    //* Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
+    // Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
     req.flash("success", "Successfully made a new campground");
     res.redirect(`/campgrounds/${campground._id}`);
     // console.dir(req);
@@ -88,6 +92,7 @@ router.get(
 //? VIDEO 413 - Route Edit.ejs: edit and update
 router.get(
   "/:id/edit",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     //* Video 495 Flash Error Partial - flash msg if campground not found
@@ -98,9 +103,11 @@ router.get(
     res.render("campgrounds/edit", { campground });
   })
 );
+
 //? VIDEO 413 - Route Edit.ejs: edit and update
 router.put(
   "/:id",
+  isLoggedIn,
   validateCampground,
   catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -114,7 +121,8 @@ router.put(
   })
 );
 router.delete(
-  `/:id`,
+  "/:id",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     // res.send("it worked");
     const { id } = req.params;
