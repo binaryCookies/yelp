@@ -1,5 +1,6 @@
 //* VIDEO 512 REGISTER - POST request route for registering user, GET request to show form, GET request to login, POST request login to login, and, logout
 //* VIDEO 516 ADDING LOGOUT - add logout route, login button margin left auto : ms-auto
+//* VIDEO 518 FIXING REGISTER ROUTE - so when we register we dont need to sign in after we get auto loggedin after registering (docs: passport log in)
 
 const express = require("express");
 const router = express.Router();
@@ -17,7 +18,7 @@ router.get("/register", (req, res) => {
 // CREATE USER VIDEO 513
 router.post(
   "/register",
-  catchAsync(async (req, res) => {
+  catchAsync(async (req, res, next) => {
     try {
       // Destructure what we want from req.body
       const { email, username, password } = req.body;
@@ -25,11 +26,16 @@ router.post(
       const user = new User({ email, username });
       // Call User.register() takes instance of new user and should also hash the password (because of passport-local-mongoose)
       const registeredUser = await User.register(user, password);
-      req.flash("success", "Welcome to Yelp Camp!");
-      res.redirect("/campgrounds");
+      // VIDEO 518 auto login after registering, requires callback - doesnt support it, note can't use passport.authticate until we authenticate a user hence the req.login code block
+      // TODO Check to see why the object is written in the db after registering. I inserted the return keyword in this line: return res.redirect("register");
+      req.login(registeredUser, (err) => {
+        if (err) return next(err);
+        req.flash("success", "Welcome to Yelp Camp!");
+        res.redirect("/campgrounds");
+      });
     } catch (e) {
       req.flash("error", e.message);
-      res.redirect("register");
+      return res.redirect("register");
     }
     // console.log(registeredUser);
     req.flash("success", "Welcome to Yelp Camp!");
