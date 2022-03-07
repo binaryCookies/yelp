@@ -1,4 +1,5 @@
 //* VIDEO 512 REGISTER - POST request route for registering user, GET request to show form, GET request to login, POST request login to login, and, logout
+//* VIDEO 516 ADDING LOGOUT - add logout route, login button margin left auto : ms-auto
 
 const express = require("express");
 const router = express.Router();
@@ -8,6 +9,7 @@ const User = require("../models/user");
 const { authenticate } = require("passport/lib");
 //VIDEO 514
 const passport = require("passport");
+const req = require("express/lib/request");
 router.get("/register", (req, res) => {
   res.render("users/register");
 });
@@ -51,5 +53,11 @@ router.post(
     res.redirect("/campgrounds");
   }
 );
+//* VIDEO 516 ADDING LOGOUT - passport method logout
+router.get("/logout", (req, res) => {
+  req.logout();
+  req.flash("success", "Goodbye!");
+  res.redirect("/campgrounds");
+});
 
 module.exports = router;
