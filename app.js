@@ -32,6 +32,7 @@ const userRoutes = require("./routes/users");
 
 //?Mongoose - created db name yelp-camp from path
 const mongoose = require("mongoose");
+
 //? 423. A New EJS Tool For Layouts - ejs-mate
 const ejsMate = require("ejs-mate");
 
@@ -101,6 +102,8 @@ passport.deserializeUser(User.deserializeUser()); // unstore in session
 
 //* - flash middleware - whatever success from the res.locals.success is we will have access to (must be before our route handlers)
 app.use((req, res, next) => {
+  // VIDEO 517 currentUser Helper - in all templates we now have access to currentUser - go to navbar.ejs to display buttons if there is a currentUser
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   // Video 495 Flash Errors Partial
   res.locals.error = req.flash("error");
