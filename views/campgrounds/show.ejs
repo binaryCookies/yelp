@@ -1,7 +1,9 @@
 <%# video 467 validations: added requied, validated-form and no validate %> <%#
 video 468. removed off-set 3 thherefore removing the centering of page, card
-body, card mb-3, class card title and text %> <%- layout('layouts/boilerplate')
-%>
+body, card mb-3, class card title and text %> <%# video 467 validations: added
+requied, validated-form and no validate %> <%# video 468. removed off-set 3
+thherefore removing the centering of page, card body, card mb-3, class card
+title and text %> <%- layout('layouts/boilerplate') %>
 
 <h1 class="text-center">CAMPGROUND SHOW PAGE</h1>
 <div class="row">
@@ -20,6 +22,7 @@ body, card mb-3, class card title and text %> <%- layout('layouts/boilerplate')
         </li>
         <li class="list-group-item">$<%= campground.price %> per night</li>
       </ul>
+      <% if(currentUser && campground.author.equals(currentUser._id)) {%>
       <div class="card-body mb-3">
         <a
           class="card-link btn btn-info"
@@ -32,12 +35,14 @@ body, card mb-3, class card title and text %> <%- layout('layouts/boilerplate')
           method="post"
         >
           <button class="btn btn-danger">Delete</button>
+
           <a class="btn btn-dark" href="/campgrounds">All Campgrounds</a>
           <a class="btn btn-secondary" href="/campgrounds/new"
             >Add a new Campground</a
           >
         </form>
       </div>
+      <% } %>
       <div class="card-footer text-muted">2 days ago</div>
     </div>
   </div>
