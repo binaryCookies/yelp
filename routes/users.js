@@ -1,6 +1,7 @@
 //* VIDEO 512 REGISTER - POST request route for registering user, GET request to show form, GET request to login, POST request login to login, and, logout
 //* VIDEO 516 ADDING LOGOUT - add logout route, login button margin left auto : ms-auto
 //* VIDEO 518 FIXING REGISTER ROUTE - so when we register we dont need to sign in after we get auto loggedin after registering (docs: passport log in)
+//* VIDEO 519 Behaviour: redirect user to originalUrl or to /campgrounds, modified middleware, user.js, print path in app.js res.local code block
 
 const express = require("express");
 const router = express.Router();
@@ -48,6 +49,7 @@ router.get("/login", (req, res) => {
   return res.render("users/login");
 });
 // possible to use in addition to auth local we can use different route to auth google or twitter.
+
 router.post(
   "/login",
   passport.authenticate("local", {
@@ -55,10 +57,13 @@ router.post(
     failureRedirect: "/login",
   }),
   (req, res) => {
-    req.flash("success", "Welcome Back");
-    res.redirect("/campgrounds");
+    req.flash("success", "welcome back!");
+    const redirectUrl = req.session.returnTo || "/campgrounds"; // redirect user to originalUrl
+    delete req.session.returnTo; // delete returnTo from session
+    res.redirect(redirectUrl);
   }
 );
+
 //* VIDEO 516 ADDING LOGOUT - passport method logout
 router.get("/logout", (req, res) => {
   req.logout();
@@ -67,3 +72,17 @@ router.get("/logout", (req, res) => {
 });
 
 module.exports = router;
+
+// router.post(
+//   "/login",
+//   // passport.authenticate("local", { //* REPLACED WITH MIDDLEWARE TO FIX BUG IN VIDEO 519 RESOURCES
+//     failureFlash: true,
+//     failureRedirect: "/login",
+//   }),
+//   (req, res) => {
+//     req.flash("success", "Welcome Back");
+//     const redirectUrl = req.session.returnTo || "/campgrounds"; // VIDEO 519 Resources fixed bug
+//     delete req.session.returnTo; // VIDEO 519 Resources fixed bug
+//     res.redirect(redirectUrl); // VIDEO 519 Resources fixed bug
+//   }
+// );

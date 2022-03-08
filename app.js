@@ -9,13 +9,13 @@
 //* VIDEO 511 CONFIGURING PASSPORT: require: User model, passport, passport-local. Use: passport.initialize, passport.session, new LocalStrategy, passport.serializeUser, passport.deserializeUser. Hard coded new user to test Auth route. Register a user call User.register()
 //* VIDEO 512 REGISTER FORM: Setup register route and form to serve. GET request /register - FORM, POST /register - create a user
 
-//? Express
+//* Express
 const express = require("express");
 const path = require("path");
 const app = express();
 const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
-//? VIDEO 466. Creating Reviews
+//* VIDEO 466. Creating Reviews
 const Review = require("./models/review");
 
 //* Video 489 Configuring Session
@@ -30,19 +30,19 @@ const campgroundRoutes = require("./routes/campgrounds");
 //* VIDEO 512 REGISTER FORM
 const userRoutes = require("./routes/users");
 
-//?Mongoose - created db name yelp-camp from path
+//* Mongoose - created db name yelp-camp from path
 const mongoose = require("mongoose");
 
-//? 423. A New EJS Tool For Layouts - ejs-mate
+//* 423. A New EJS Tool For Layouts - ejs-mate
 const ejsMate = require("ejs-mate");
 
-//? VIDEO 443. Defining Express Error Class -> MUTED video 487 Breaking Out Review Routes
+//* VIDEO 443. Defining Express Error Class -> MUTED video 487 Breaking Out Review Routes
 // const catchAsync = require("./utils/catchAsync");
 
-//? Video 447 Joi Validation Middleware //? VIDEO 467 Review Validation
+//* Video 447 Joi Validation Middleware //? VIDEO 467 Review Validation
 const { campgroundSchema, reviewSchema } = require("./schemas.js");
 
-//? VIDEO 413 npm i method-override (fake a put, patch or delete)
+//* VIDEO 413 npm i method-override (fake a put, patch or delete)
 const methodOverride = require("method-override");
 const campground = require("./models/campground.js");
 const { findById } = require("./models/campground");
@@ -62,9 +62,9 @@ db.once("open", () => {
   console.log("DATABASE CONNECTED");
 });
 
-//? VIDEO 412 new.ejs - New and Create Submit Form. Express, Method-Override middleware.
+//* VIDEO 412 new.ejs - New and Create Submit Form. Express, Method-Override middleware.
 app.use(express.urlencoded({ extended: true }));
-//?VIDEO 413 npm i method-override
+//* VIDEO 413 npm i method-override
 app.use(methodOverride("_method"));
 /**********/
 
@@ -103,6 +103,7 @@ passport.deserializeUser(User.deserializeUser()); // unstore in session
 //* - flash middleware - whatever success from the res.locals.success is we will have access to (must be before our route handlers)
 app.use((req, res, next) => {
   // VIDEO 517 currentUser Helper - in all templates we now have access to currentUser - go to navbar.ejs to display buttons if there is a currentUser
+  // console.log(req.session); // print session
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   // Video 495 Flash Errors Partial
@@ -123,13 +124,13 @@ app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/reviews", reviewRoutes);
 app.use("/", userRoutes);
 
-//? HOME PAGE ROUTE
+//* HOME PAGE ROUTE
 app.get("/", (req, res) => {
   // console.log(STATUS_CODES);
-  console.log(req);
+  // console.log(req);
   res.render("home");
 });
-// //? Initial Testing route
+// INITIAL TESTING ROUTE
 // app.get("/makecampground", async (req, res) => {
 //   const camp = new Campground({
 //     title: "My backyard",
@@ -140,25 +141,25 @@ app.get("/", (req, res) => {
 // });
 /*********** */
 
-//? 423. A New EJS Tool For Layouts - ejs-mate (found on gitHub) Express, Mongoose, ejs-mate and Method-Override middleware.
+//* 423. A New EJS Tool For Layouts - ejs-mate (found on gitHub) Express, Mongoose, ejs-mate and Method-Override middleware.
 app.engine("ejs", ejsMate);
-//? HOME.EJS Route
+//* HOME.EJS Route
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-//? VIDEO 444 More Errors, * means every path, this only runs if none of the preceeding handlers did
+//* VIDEO 444 More Errors, * means every path, this only runs if none of the preceeding handlers did
 app.all("*", (req, res, next) => {
   next(new ExpressError("PAGE NOT FOUND. Dev-Mode: See stack trace", 404));
 });
 
-//? VIDEO 442 Basic Error Handling
+//* VIDEO 442 Basic Error Handling
 app.use((err, req, res, next) => {
-  //? Viddeo 444: destructured from Error (ExpressError)
+  //* Viddeo 444: destructured from Error (ExpressError)
   // const { statusCode = 500, message = "Something Went Wrong" } = err;
-  //? VIDEO 445: above is replaced with:
+  //* VIDEO 445: above is replaced with:
   const { statusCode = 500 } = err;
   if (!err.message) err.message("Oh No, Something Went Wrong!");
-  //? VIDEO 445: changed .send(message) -> .render('error'),  passed {err} to error.ejs template
+  //* VIDEO 445: changed .send(message) -> .render('error'),  passed {err} to error.ejs template
   res.status(statusCode).render("error", { err });
   // res.send("OH BOY, SOMETHING WENT WRONG!");
 });
