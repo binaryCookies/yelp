@@ -58,8 +58,8 @@ router.post(
   }),
   (req, res) => {
     req.flash("success", "welcome back!");
-    const redirectUrl = req.session.returnTo || "/campgrounds"; // redirect user to originalUrl
-    delete req.session.returnTo; // delete returnTo from session
+    const redirectUrl = req.session.returnTo || "/campgrounds"; // VIDEO 519 returnTO Behavior, redirect user to originalUrl
+    delete req.session.returnTo; // 519 delete returnTo from session
     res.redirect(redirectUrl);
   }
 );
@@ -75,7 +75,7 @@ module.exports = router;
 
 // router.post(
 //   "/login",
-//   // passport.authenticate("local", { //* REPLACED WITH MIDDLEWARE TO FIX BUG IN VIDEO 519 RESOURCES
+// passport.authenticate("local", { //* REPLACED WITH MIDDLEWARE TO FIX BUG IN VIDEO 519 RESOURCES
 //     failureFlash: true,
 //     failureRedirect: "/login",
 //   }),

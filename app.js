@@ -103,7 +103,7 @@ passport.deserializeUser(User.deserializeUser()); // unstore in session
 //* - flash middleware - whatever success from the res.locals.success is we will have access to (must be before our route handlers)
 app.use((req, res, next) => {
   // VIDEO 517 currentUser Helper - in all templates we now have access to currentUser - go to navbar.ejs to display buttons if there is a currentUser
-  // console.log(req.session); // print session
+  // console.log(req.session); // VIDEO 519 print session
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   // Video 495 Flash Errors Partial

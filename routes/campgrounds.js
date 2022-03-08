@@ -9,6 +9,7 @@
  ** Cut paste validateCampground to campgrounds.js
  ** Copied campgroundSchema (updated path deleted the reviewSchema) although it was working I followed the video
  ** VIDEO 515 new file middleware.js isLoggedIn Middleware Passport: using isAuthenticated on get/new, import middleware.js
+ ** VIDEO 520 Adding an Author - show route chain on .populate ('author')
  */
 
 const express = require("express");
@@ -49,11 +50,13 @@ router.get(
 router.get("/new", isLoggedIn, (req, res) => {
   res.render("campgrounds/new");
 });
+
 //? VIDEO 412 new.ejs - New and Create Submit Form
 //? (must parse data urlendoded...)
 //? Video 442: Added next, try...
 //? VIDEO 443. Defining Express Error Class try and catch replaced
 //? VIDEDO 467 Validate reviews.
+
 router.post(
   "/",
   // added validateCampground video 447, isLoggedIn Video 515
@@ -62,10 +65,11 @@ router.post(
   catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body.campground);
     //  res.send(req.body); // testing post route
+    campground.author = req.user._id; // VIDEO 520 Adding Author to Campground
     await campground.save();
     // Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
     req.flash("success", "Successfully made a new campground");
-    res.redirect(`/campgrounds/${campground._id}`);
+    return res.redirect(`/campgrounds/${campground._id}`);
     // console.dir(req);
     // console.log(req.body.campground);
   })
@@ -76,9 +80,10 @@ router.post(
 router.get(
   "/:id",
   catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id).populate(
-      "reviews"
-    );
+    const campground = await Campground.findById(req.params.id)
+      .populate("reviews")
+      .populate("author");
+    console.log(campground); // print to test if author and username show
     //* Video 495 Flash Error Partial - flash msg if campground not found
     if (!campground) {
       req.flash("error", "Cannot find that campground");
