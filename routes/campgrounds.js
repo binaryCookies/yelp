@@ -10,6 +10,8 @@
  ** Copied campgroundSchema (updated path deleted the reviewSchema) although it was working I followed the video
  ** VIDEO 515 new file middleware.js isLoggedIn Middleware Passport: using isAuthenticated on get/new, import middleware.js
  ** VIDEO 520 Adding an Author - show route chain on .populate ('author')
+ ** VIDEO 522 CAMPGROUND PERMISSIONS -  break the update route into 2 steps. check if current campground ID has same ID as current logged in user sending this request
+ **   1. Find campground -> 2. Check if we can update
  */
 
 const express = require("express");
@@ -94,30 +96,42 @@ router.get(
   })
 );
 
-//? VIDEO 413 - Route Edit.ejs: edit and update
+//? VIDEO 413 - Route Edit.ejs: edit and update, 522 Campground Permissions (server side, prevent get edit page request from postman etc )
 router.get(
   "/:id/edit",
   isLoggedIn,
   catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    //* Video 495 Flash Error Partial - flash msg if campground not found
+    const { id } = req.params;
+    const campground = await Campground.findById(id); // Step 1 find campground by id
     if (!campground) {
-      req.flash("error", "Cannot find that campground");
+      req.flash("error", "Cannot find that campground"); // Video 495 Flash Error Partial - flash msg if campground not found
       return res.redirect("/campgrounds");
+    }
+
+    if (!campground.author.equals(req.user._id)) {
+      // Step 2 Verify if current user is author of the campground
+      req.flash("error", "You do not have permission to do that");
+      return res.redirect(`/campgrounds/${id}`); // Step 3 redirect to show page
     }
     res.render("campgrounds/edit", { campground });
   })
 );
 
-//? VIDEO 413 - Route Edit.ejs: edit and update
+//? VIDEO 413 - Route Edit.ejs: edit and update & VIDEO 522 CAMPGROUND PERMISSIONS
 router.put(
   "/:id",
   isLoggedIn,
   validateCampground,
   catchAsync(async (req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, {
-      ...req.body.campground,
+    const campground = await Campground.findById(id); // Step 1 find campground by id
+    if (!campground.author.equals(req.user._id)) {
+      // Step 2 Verify if current user is author of the campground
+      req.flash("error", "You do not have permission to do that");
+      return res.redirect(`/campgrounds/${id}`); // Step 3 redirect to show page
+    }
+    const camp = await Campground.findByIdAndUpdate(id, {
+      ...req.body.camp,
     });
     //* Video 494 Flash Success partial - flash update msg
     req.flash("success", "Successfully updated the campground");
@@ -125,14 +139,15 @@ router.put(
     // res.send("it worked");
   })
 );
+//? 522 Campground Permissions - adding authorization server side
 router.delete(
   "/:id",
   isLoggedIn,
   catchAsync(async (req, res) => {
     // res.send("it worked");
     const { id } = req.params;
-    console.log(req.params);
-    const campground = await Campground.findByIdAndDelete(id);
+    // console.log(req.params);
+    await Campground.findByIdAndDelete(id);
     req.flash("success", "Successfully deleted campground");
     res.redirect("/campgrounds");
   })
