@@ -12,32 +12,19 @@
  ** VIDEO 520 Adding an Author - show route chain on .populate ('author')
  ** VIDEO 522 CAMPGROUND PERMISSIONS -  break the update route into 2 steps. check if current campground ID has same ID as current logged in user sending this request
  **   1. Find campground -> 2. Check if we can update
+ ** VIDEO 523 AUTHORIZATION MIDDLEWARE - isAuthor middleware applied to edit, delete, route   (deleted old permission block for isAuthor middleware ), required { isLoggedIn, isAuthor, validateCampground }, exported modules from middleware file
+ **
  */
 
 const express = require("express");
 const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
-const { campgroundSchema } = require("../schemas.js");
-const ExpressError = require("../utils/ExpressError");
+// const { campgroundSchema } = require("../schemas.js");  moved to middleware file
+
 const Campground = require("../models/campground");
 //* VIDEO 515 isLoggedIn
-const { isLoggedIn } = require("../middleware");
-
-//?VIDEO 447
-const validateCampground = (req, res, next) => {
-  const { error } = campgroundSchema.validate(req.body);
-  // console.log(error);
-  // console.dir(req.body.campground.title);
-  // console.dir(req.body);
-  // console.log(STATUS_CODES);
-  // console.log(req);
-  if (error) {
-    const msg = error.details.map((element) => element.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
+const { isLoggedIn, isAuthor, validateCampground } = require("../middleware");
+const ExpressError = require("../utils/ExpressError");
 
 //? All Campgrounds - INDEX Route
 router.get(
@@ -100,6 +87,7 @@ router.get(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id); // Step 1 find campground by id
@@ -107,30 +95,25 @@ router.get(
       req.flash("error", "Cannot find that campground"); // Video 495 Flash Error Partial - flash msg if campground not found
       return res.redirect("/campgrounds");
     }
+    // if (!campground.author.equals(req.user._id)) { // muted video 523
+    //   Step 2 Verify if current user is author of the campground
+    //   req.flash("error", "You do not have permission to do that");
+    //   return res.redirect(`/campgrounds/${id}`); // Step 3 redirect to show page
+    // }
 
-    if (!campground.author.equals(req.user._id)) {
-      // Step 2 Verify if current user is author of the campground
-      req.flash("error", "You do not have permission to do that");
-      return res.redirect(`/campgrounds/${id}`); // Step 3 redirect to show page
-    }
     res.render("campgrounds/edit", { campground });
   })
 );
 
-//? VIDEO 413 - Route Edit.ejs: edit and update & VIDEO 522 CAMPGROUND PERMISSIONS
+//? VIDEO 413 - Route Edit.ejs: edit and update
 router.put(
   "/:id",
   isLoggedIn,
+  isAuthor,
   validateCampground,
   catchAsync(async (req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findById(id); // Step 1 find campground by id
-    if (!campground.author.equals(req.user._id)) {
-      // Step 2 Verify if current user is author of the campground
-      req.flash("error", "You do not have permission to do that");
-      return res.redirect(`/campgrounds/${id}`); // Step 3 redirect to show page
-    }
-    const camp = await Campground.findByIdAndUpdate(id, {
+    const campground = await Campground.findByIdAndUpdate(id, {
       ...req.body.camp,
     });
     //* Video 494 Flash Success partial - flash update msg
@@ -143,6 +126,7 @@ router.put(
 router.delete(
   "/:id",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     // res.send("it worked");
     const { id } = req.params;

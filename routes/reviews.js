@@ -20,23 +20,10 @@ const router = express.Router({ mergeParams: true });
 
 const Campground = require("../models/campground");
 const Review = require("../models/review");
-
-//* VIDEO 487 removed the campgroundSchema, not needed here
-const { reviewSchema } = require("../schemas.js");
+const { validateReview } = require("../middleware");
 
 const ExpressError = require("../utils/ExpressError");
 const catchAsync = require("../utils/catchAsync");
-
-//? VIDEO 467 Validating Reviews middleware
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((element) => element.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
 
 //? VIDEO 466. CREATING REVIEWS
 router.post(
