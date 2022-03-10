@@ -14,6 +14,7 @@
  **   1. Find campground -> 2. Check if we can update
  ** VIDEO 523 AUTHORIZATION MIDDLEWARE - isAuthor middleware applied to edit, delete, route   (deleted old permission block for isAuthor middleware ), required { isLoggedIn, isAuthor, validateCampground }, exported modules from middleware file
  ** Moved validateReviews to middleware file from reviews.js file
+ ** VIDEO 525 MORE REVIEWS AUTHORIZATION - campground.js populate author of each review, added reviews by in show.ejs under reviews section. (username access possible by review loop of each campground), hide delete button, protect delete route
  */
 
 const express = require("express");
@@ -65,12 +66,17 @@ router.post(
 );
 
 //? VIDEO 411 Campground Show Page - use id to lookup corresponding campground
-//? VIDEO 468 Displaying reviews, added populate
+//? VIDEO 468 Displaying reviews, added populate - VIDEO 525 MORE REVIEWS AUTHORIZATION - populate author of each review
 router.get(
   "/:id",
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id)
-      .populate("reviews")
+      .populate({
+        path: "reviews", // VIDEO 525 - added nested populate, path: author
+        populate: {
+          path: "author",
+        },
+      })
       .populate("author");
     console.log(campground); // print to test if author and username show
     //* Video 495 Flash Error Partial - flash msg if campground not found

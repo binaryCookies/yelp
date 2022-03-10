@@ -13,6 +13,7 @@
  ** Copied reviewSchema deleted campgroundSchema from it as not required here (JOI Validation Middleware)
  ** 524 REVIEWS PERMISSIONS - must be logged in to see form, to submit review, connect review made with associated review
  ** Update review schema, update show.ejs to hide form if currentUser is not logged in, required isLoggedIn and applied it to post route creating a review, associate currentUser with author of newly created review
+ ** VIDEO 525 MORE REVIEWS AUTHORIZATION - populate author of each review, import isLoggedIn, added isReviewAuthor middleware to delete route
  */
 
 const express = require("express");
@@ -22,7 +23,7 @@ const router = express.Router({ mergeParams: true });
 
 const Campground = require("../models/campground");
 const Review = require("../models/review");
-const { validateReview, isLoggedIn } = require("../middleware");
+const { validateReview, isLoggedIn, isReviewAuthor } = require("../middleware");
 
 const ExpressError = require("../utils/ExpressError");
 const catchAsync = require("../utils/catchAsync");
@@ -47,9 +48,11 @@ router.post(
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
-//? VIDEO 470 Delteing reviews
+//? VIDEO 470 Delteing reviews - 525 More Review Authorizations (isLoggedin)
 router.delete(
   "/:reviewId",
+  isLoggedIn,
+  isReviewAuthor,
   catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     // MongoDB The $pull operator removes from an existing array all instances of a value or values that match a specified condition.

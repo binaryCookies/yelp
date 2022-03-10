@@ -7,6 +7,7 @@
 //* Required below as of VIDEO 523 AUTHORIZATION MIDDLEWARE
 const { campgroundSchema, reviewSchema } = require("./schemas.js"); // JOI validations
 const Campground = require("./models/campground");
+const Review = require("./models/review");
 
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
@@ -20,7 +21,18 @@ module.exports.isLoggedIn = (req, res, next) => {
   next();
 };
 
-//?VIDEO 522 CAMPGROUND PERMISSIONS & 523 AUTHORIZATION MIDDLEWARE
+//?525 AUTHORIZATION MIDDLEWARE { id, reviewId } -> redirect using id, find review using reviewId
+module.exports.isReviewAuthor = async (req, res, next) => {
+  const { id, reviewId } = req.params; // Video 525 - reviewId as per delete route path
+  const review = await Review.findById(reviewId); // 525 - Step 1 find review by id
+  if (!review.author.equals(req.user._id)) {
+    req.flash("error", "You do not have permission to do that");
+    return res.redirect(`/campgrounds/${id}`);
+  }
+  next();
+};
+
+//?VIDEO 522 CAMPGROUND PERMISSIONS
 module.exports.isAuthor = async (req, res, next) => {
   const { id } = req.params;
   const campground = await Campground.findById(id); // Step 1 find campground by id
