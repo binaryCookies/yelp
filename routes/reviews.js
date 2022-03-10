@@ -11,6 +11,8 @@
  ** Cut validateReview middleware which requires expressError utility
  ** Copied expressError utility required by JOI validation validateReview ->  expressError
  ** Copied reviewSchema deleted campgroundSchema from it as not required here (JOI Validation Middleware)
+ ** 524 REVIEWS PERMISSIONS - must be logged in to see form, to submit review, connect review made with associated review
+ ** Update review schema, update show.ejs to hide form if currentUser is not logged in, required isLoggedIn and applied it to post route creating a review, associate currentUser with author of newly created review
  */
 
 const express = require("express");
@@ -20,21 +22,24 @@ const router = express.Router({ mergeParams: true });
 
 const Campground = require("../models/campground");
 const Review = require("../models/review");
-const { validateReview } = require("../middleware");
+const { validateReview, isLoggedIn } = require("../middleware");
 
 const ExpressError = require("../utils/ExpressError");
 const catchAsync = require("../utils/catchAsync");
 
-//? VIDEO 466. CREATING REVIEWS
+//? VIDEO 466. CREATING REVIEWS, 524 REVIEW PERMISSIONS - isLoggedIn
 router.post(
   "/",
   validateReview,
+  isLoggedIn,
   catchAsync(async (req, res) => {
     // res.send("Step 1: THIS IS THE ROUTE TEST, SUBMIT TO FORM WITH SAME PATH");
     const campground = await Campground.findById(req.params.id); // Step 2 test w/ console.log(req.params)
-    // Step 3Add review model
+    // Step 3 Add review model
     const review = new Review(req.body.review);
     // console.log(req.body.review);
+    // VIDEO 524 REVIEW PERMISSIONS
+    review.author = req.user._id;
     campground.reviews.push(review);
     await review.save();
     await campground.save();

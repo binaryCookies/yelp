@@ -43,6 +43,8 @@ title and text %> <%- layout('layouts/boilerplate') %>
   </div>
   <%# video 468 added new column %>
   <div class="col-6">
+    <%# VIDEO 524 REVIEW PERMISSIONS - hid the form if not logged in%> <%
+    if(currentUser) {%>
     <h2>Leave A Review</h2>
     <%# this mb-3 gets us off the footeer %>
     <form
@@ -79,8 +81,8 @@ title and text %> <%- layout('layouts/boilerplate') %>
       </div>
       <div></div>
     </form>
-    <%# video 468 styling reviews %> <% for(let review of campground.reviews)
-    {%>
+    <% } %> <%# video 468 styling reviews %> <% for(let review of
+    campground.reviews) {%>
     <div class="card mb-3">
       <div class="card-body">
         <h5 class="card-title">Rating: <%= review.rating %></h5>

@@ -1,5 +1,6 @@
 //? VIDEO 464. Defining The Review Model
 //? one to many. one campground with many reviews
+//? author VIDEO 524 REVIEWS PERMISSION
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;

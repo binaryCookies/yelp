@@ -13,7 +13,7 @@
  ** VIDEO 522 CAMPGROUND PERMISSIONS -  break the update route into 2 steps. check if current campground ID has same ID as current logged in user sending this request
  **   1. Find campground -> 2. Check if we can update
  ** VIDEO 523 AUTHORIZATION MIDDLEWARE - isAuthor middleware applied to edit, delete, route   (deleted old permission block for isAuthor middleware ), required { isLoggedIn, isAuthor, validateCampground }, exported modules from middleware file
- **
+ ** Moved validateReviews to middleware file from reviews.js file
  */
 
 const express = require("express");
