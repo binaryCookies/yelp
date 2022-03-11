@@ -27,19 +27,13 @@ const Campground = require("../models/campground");
 const { isLoggedIn, isAuthor, validateCampground } = require("../middleware");
 const ExpressError = require("../utils/ExpressError");
 
+const campgrounds = require("../controllers/campgrounds");
+
 //? All Campgrounds - INDEX Route
-router.get(
-  "/",
-  catchAsync(async (req, res) => {
-    const campgrounds = await Campground.find({});
-    res.render("campgrounds/index", { campgrounds });
-  })
-);
+router.get("/", catchAsync(campgrounds.index));
 
 //? Video 412 new.ejs, Create New campground - Form
-router.get("/new", isLoggedIn, (req, res) => {
-  res.render("campgrounds/new");
-});
+router.get("/new", isLoggedIn, campgrounds.renderNewForm);
 
 //? VIDEO 412 new.ejs - New and Create Submit Form
 //? (must parse data urlendoded...)
@@ -52,63 +46,19 @@ router.post(
   // added validateCampground video 447, isLoggedIn Video 515
   isLoggedIn,
   validateCampground,
-  catchAsync(async (req, res, next) => {
-    const campground = new Campground(req.body.campground);
-    //  res.send(req.body); // testing post route
-    campground.author = req.user._id; // VIDEO 520 Adding Author to Campground
-    await campground.save();
-    // Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
-    req.flash("success", "Successfully made a new campground");
-    return res.redirect(`/campgrounds/${campground._id}`);
-    // console.dir(req);
-    // console.log(req.body.campground);
-  })
+  catchAsync(campgrounds.createCampground)
 );
 
 //? VIDEO 411 Campground Show Page - use id to lookup corresponding campground
 //? VIDEO 468 Displaying reviews, added populate - VIDEO 525 MORE REVIEWS AUTHORIZATION - populate author of each review
-router.get(
-  "/:id",
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id)
-      .populate({
-        path: "reviews", // VIDEO 525 - added nested populate, path: author
-        populate: {
-          path: "author",
-        },
-      })
-      .populate("author");
-    console.log(campground); // print to test if author and username show
-    //* Video 495 Flash Error Partial - flash msg if campground not found
-    if (!campground) {
-      req.flash("error", "Cannot find that campground");
-      return res.redirect("/campgrounds");
-    }
-    res.render("campgrounds/show", { campground });
-    // console.log(campground);
-  })
-);
+router.get("/:id", catchAsync(campgrounds.showCampground));
 
 //? VIDEO 413 - Route Edit.ejs: edit and update, 522 Campground Permissions (server side, prevent get edit page request from postman etc )
 router.get(
   "/:id/edit",
   isLoggedIn,
   isAuthor,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const campground = await Campground.findById(id); // Step 1 find campground by id
-    if (!campground) {
-      req.flash("error", "Cannot find that campground"); // Video 495 Flash Error Partial - flash msg if campground not found
-      return res.redirect("/campgrounds");
-    }
-    // if (!campground.author.equals(req.user._id)) { // muted video 523
-    //   Step 2 Verify if current user is author of the campground
-    //   req.flash("error", "You do not have permission to do that");
-    //   return res.redirect(`/campgrounds/${id}`); // Step 3 redirect to show page
-    // }
-
-    res.render("campgrounds/edit", { campground });
-  })
+  catchAsync(campgrounds.renderEditForm)
 );
 
 //? VIDEO 413 - Route Edit.ejs: edit and update
@@ -117,29 +67,13 @@ router.put(
   isLoggedIn,
   isAuthor,
   validateCampground,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, {
-      ...req.body.camp,
-    });
-    //* Video 494 Flash Success partial - flash update msg
-    req.flash("success", "Successfully updated the campground");
-    res.redirect(`/campgrounds/${campground._id}`);
-    // res.send("it worked");
-  })
+  catchAsync(campgrounds.updateCampground)
 );
 //? 522 Campground Permissions - adding authorization server side
 router.delete(
   "/:id",
   isLoggedIn,
   isAuthor,
-  catchAsync(async (req, res) => {
-    // res.send("it worked");
-    const { id } = req.params;
-    // console.log(req.params);
-    await Campground.findByIdAndDelete(id);
-    req.flash("success", "Successfully deleted campground");
-    res.redirect("/campgrounds");
-  })
+  catchAsync(campgrounds.deleteCampground)
 );
 module.exports = router;
