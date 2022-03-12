@@ -6,50 +6,83 @@
 
 const express = require("express");
 const router = express.Router();
+//VIDEO 514
+const passport = require("passport");
 // VIDEO 513
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/user");
-const { authenticate } = require("passport/lib");
-//VIDEO 514
-const passport = require("passport");
-const req = require("express/lib/request");
 const users = require("../controllers/users");
 
-router.get("/register", users.renderRegister);
-
 //CREATE USER VIDEO 513
-router.post("/register", catchAsync(users.register));
+router
+  .route("/register")
+  .get(users.renderRegister)
+  .post(catchAsync(users.register));
 
 //VIDEO 514 LOGIN ROUTES - passport.authenticate
-router.get("/login", users.renderLogin);
 // possible to use in addition to auth local we can use different route to auth google or twitter.
-
-//LOGIN
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    failureFlash: true,
-    failureRedirect: "/login",
-  }),
-  users.login
-);
+router
+  .route("/login")
+  .get(users.renderLogin)
+  .post(
+    passport.authenticate("local", {
+      failureFlash: true,
+      failureRedirect: "/login",
+    }),
+    users.login
+  );
 
 //VIDEO 516 ADDING LOGOUT - passport method logout
 router.get("/logout", users.logout);
 
 module.exports = router;
 
-/******************************* */
+// const express = require("express");
+// const router = express.Router();
+// // VIDEO 513
+// const catchAsync = require("../utils/catchAsync");
+// const User = require("../models/user");
+// const { authenticate } = require("passport/lib");
+// //VIDEO 514
+// const passport = require("passport");
+// const req = require("express/lib/request");
+// const users = require("../controllers/users");
+
+// router.get("/register", users.renderRegister);
+
+// //CREATE USER VIDEO 513
+// router.post("/register", catchAsync(users.register));
+
+// //VIDEO 514 LOGIN ROUTES - passport.authenticate
+// router.get("/login", users.renderLogin);
+// // possible to use in addition to auth local we can use different route to auth google or twitter.
+
+// //LOGIN
 // router.post(
 //   "/login",
-// passport.authenticate("local", { //* REPLACED WITH MIDDLEWARE TO FIX BUG IN VIDEO 519 RESOURCES
+//   passport.authenticate("local", {
 //     failureFlash: true,
 //     failureRedirect: "/login",
 //   }),
-//   (req, res) => {
-//     req.flash("success", "Welcome Back");
-//     const redirectUrl = req.session.returnTo || "/campgrounds"; // VIDEO 519 Resources fixed bug
-//     delete req.session.returnTo; // VIDEO 519 Resources fixed bug
-//     res.redirect(redirectUrl); // VIDEO 519 Resources fixed bug
-//   }
+//   users.login
 // );
+
+// //VIDEO 516 ADDING LOGOUT - passport method logout
+// router.get("/logout", users.logout);
+
+// module.exports = router;
+
+// /******************************* */
+// // router.post(
+// //   "/login",
+// // passport.authenticate("local", { //* REPLACED WITH MIDDLEWARE TO FIX BUG IN VIDEO 519 RESOURCES
+// //     failureFlash: true,
+// //     failureRedirect: "/login",
+// //   }),
+// //   (req, res) => {
+// //     req.flash("success", "Welcome Back");
+// //     const redirectUrl = req.session.returnTo || "/campgrounds"; // VIDEO 519 Resources fixed bug
+// //     delete req.session.returnTo; // VIDEO 519 Resources fixed bug
+// //     res.redirect(redirectUrl); // VIDEO 519 Resources fixed bug
+// //   }
+// // );

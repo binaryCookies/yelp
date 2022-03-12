@@ -26,32 +26,28 @@ const Campground = require("../models/campground");
 //* VIDEO 515 isLoggedIn
 const { isLoggedIn, isAuthor, validateCampground } = require("../middleware");
 const ExpressError = require("../utils/ExpressError");
-
 const campgrounds = require("../controllers/campgrounds");
 
+//*VIDEO 528 A FANCY WAY TO RESTRUCTURE ROUTES - docs: express router.route
 //? All Campgrounds - INDEX Route
-router.get("/", catchAsync(campgrounds.index));
-
-//? Video 412 new.ejs, Create New campground - Form
-router.get("/new", isLoggedIn, campgrounds.renderNewForm);
-
-//? VIDEO 412 new.ejs - New and Create Submit Form
-//? (must parse data urlendoded...)
-//? Video 442: Added next, try...
-//? VIDEO 443. Defining Express Error Class try and catch replaced
-//? VIDEDO 467 Validate reviews.
-
-router.post(
-  "/",
-  // added validateCampground video 447, isLoggedIn Video 515
+router.route("/").get(catchAsync(campgrounds.index)).post(
   isLoggedIn,
   validateCampground,
   catchAsync(campgrounds.createCampground)
+  // added validateCampground video 447, isLoggedIn Video 515
 );
-
-//? VIDEO 411 Campground Show Page - use id to lookup corresponding campground
-//? VIDEO 468 Displaying reviews, added populate - VIDEO 525 MORE REVIEWS AUTHORIZATION - populate author of each review
-router.get("/:id", catchAsync(campgrounds.showCampground));
+//? Video 412 new.ejs, Create New campground - Form. MUST HAVE NEW ROUTE ABOVE ROUTE ID
+router.get("/new", isLoggedIn, campgrounds.renderNewForm);
+router
+  .route("/:id")
+  .get(catchAsync(campgrounds.showCampground))
+  .put(
+    isLoggedIn,
+    isAuthor,
+    validateCampground,
+    catchAsync(campgrounds.updateCampground)
+  )
+  .delete(isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCampground));
 
 //? VIDEO 413 - Route Edit.ejs: edit and update, 522 Campground Permissions (server side, prevent get edit page request from postman etc )
 router.get(
@@ -61,19 +57,17 @@ router.get(
   catchAsync(campgrounds.renderEditForm)
 );
 
+//? VIDEO 412 new.ejs - New and Create Submit Form
+//? (must parse data urlendoded...)
+//? Video 442: Added next, try...
+//? VIDEO 443. Defining Express Error Class try and catch replaced
+//? VIDEDO 467 Validate reviews.
+//--
+//? VIDEO 411 Campground Show Page - use id to lookup corresponding campground
+//? VIDEO 468 Displaying reviews, added populate - VIDEO 525 MORE REVIEWS AUTHORIZATION - populate author of each review
+//--
 //? VIDEO 413 - Route Edit.ejs: edit and update
-router.put(
-  "/:id",
-  isLoggedIn,
-  isAuthor,
-  validateCampground,
-  catchAsync(campgrounds.updateCampground)
-);
+//--
 //? 522 Campground Permissions - adding authorization server side
-router.delete(
-  "/:id",
-  isLoggedIn,
-  isAuthor,
-  catchAsync(campgrounds.deleteCampground)
-);
+
 module.exports = router;
