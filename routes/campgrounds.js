@@ -29,7 +29,9 @@ const ExpressError = require("../utils/ExpressError");
 const campgrounds = require("../controllers/campgrounds");
 //VIDEO 532 THE MULTER MIDDLEWARE
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" }); //destination and path
+//VIDEO 535 UPLOADING CLOUDINARY BASICS
+const { storage } = require("../cloudinary");
+const upload = multer({ storage }); //destination and path, changed to storage object created VIDEO 535
 
 //*VIDEO 528 A FANCY WAY TO RESTRUCTURE ROUTES - docs: express router.route
 //? All Campgrounds - INDEX Route

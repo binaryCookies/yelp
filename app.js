@@ -9,8 +9,14 @@
 //* VIDEO 511 CONFIGURING PASSPORT: require: User model, passport, passport-local. Use: passport.initialize, passport.session, new LocalStrategy, passport.serializeUser, passport.deserializeUser. Hard coded new user to test Auth route. Register a user call User.register()
 //* VIDEO 512 REGISTER FORM: Setup register route and form to serve. GET request /register - FORM, POST /register - create a user
 //* VIDEO 531 INTRO TO UPLOAD IMAGE PROCESS - we're using cloudinary alternative is GridFS, AWS.
-//* 532 THE MULTER MIDDLEWARE - At new form setting for to have enctype="multipart/form-data" (url-endoded won't work to upload images), add new input - muted old image input, go to where form is submittd - post route, testing post route with res.send req.body, adding express.js/multer middleware to parse enctype="multipart/form-data", from Multer adding const multer  = require('multer'), const upload = multer({ dest: 'uploads/' }) to route, tested w/ console.log(req.body, req.file), camprground post route changed single('image') to array('image), new form input image added attribute multiple,
+//* 532 THE MULTER MIDDLEWARE - At new form setting for to have enctype="multipart/form-data" (url-endoded won't work to upload images), add new input - muted old image input, go to where form is submittd - campgrounds post route, testing post route with res.send req.body, adding express.js/multer middleware to parse enctype="multipart/form-data", from Multer docs adding: const multer  = require('multer'), const upload = multer({ dest: 'uploads/' }) to route, tested route w/ console.log(req.body, req.file), camprground post route changed single('image') to array('image), new form input image added attribute multiple,
 //*Multer adds a body object and a file or files object to the request object. The body object contains the values of the text fields of the form, the file or files object contains the files uploaded via the form
+
+//VIDEO 534 ENVIRONMENT VARIABLES WITH dotenv: DOTENV - npm package - HOW TO ACCESS THE .env file
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+// console.log(process.env.CLOUDINARY_CLOUD_NAME);
 
 //* Express
 const express = require("express");
