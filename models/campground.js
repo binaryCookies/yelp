@@ -3,6 +3,7 @@
 //* import modules to index.js
 //* VIDEO 520 ADDING AN AUTHOR TO CAMPGROUND - connect user model with particular campgrounds and particular reviews. EX. So I can create a review assoiciated with my account and only I could edit or delete
 //* 520: add author field to model, update seeds index file to include author field (get existing user id from mongodb), run: node seeds/index.js, check db of campgrounds to have author id, populate model to get user name (campgrounds.js), show route chain on .populate ('author'), show.ejs added author and username, update campgrounds route where we create a route to associate current user with campground being created
+//* VIDEO 536 STORING UPLOADED IMAGE LINKS IN MONGO - campground model changed image property to images and the value from string to array (joi validation will be affected - next step fix), map over array in req object provided from multer save filenames and path of images uploaded, loop over image properties in campgrounds/show page, updated the routes/campgrounds "/" route by adding upload.array("image") to the post validation,
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
@@ -11,7 +12,12 @@ const Review = require("./review");
 
 const CampgroundSchema = new Schema({
   title: String,
-  image: String,
+  images: [
+    {
+      url: String,
+      filename: String,
+    },
+  ],
   price: Number,
   description: String,
   location: String,

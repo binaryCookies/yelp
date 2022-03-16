@@ -25,7 +25,7 @@ const catchAsync = require("../utils/catchAsync");
 const Campground = require("../models/campground");
 //VIDEO 515 isLoggedIn
 const { isLoggedIn, isAuthor, validateCampground } = require("../middleware");
-const ExpressError = require("../utils/ExpressError");
+// const ExpressError = require("../utils/ExpressError");
 const campgrounds = require("../controllers/campgrounds");
 //VIDEO 532 THE MULTER MIDDLEWARE
 const multer = require("multer");
@@ -35,17 +35,16 @@ const upload = multer({ storage }); //destination and path, changed to storage o
 
 //*VIDEO 528 A FANCY WAY TO RESTRUCTURE ROUTES - docs: express router.route
 //? All Campgrounds - INDEX Route
-router
-  .route("/")
-  .get(catchAsync(campgrounds.index))
-  // .post(
-  //   isLoggedIn,
-  //   validateCampground, //added validateCampground video 447, isLoggedIn Video 515
-  //   catchAsync(campgrounds.createCampground));//
-  .post(upload.array("image"), (req, res) => {
-    //VIDEO 532 MULTER - upload.single('image') - image is the form field name
-    console.log(req.body, req.files); // pluaralized file when setting changed from single to array
-  });
+router.route("/").get(catchAsync(campgrounds.index)).post(
+  isLoggedIn,
+  upload.array("image"), //Added from below muted block VIDEO 536
+  validateCampground, //added validateCampground video 447, isLoggedIn Video 515
+  catchAsync(campgrounds.createCampground)
+);
+// .post(upload.array("image"), (req, res) => { //Muted VIDEO 536
+//VIDEO 532 MULTER - upload.single('image') - image is the form field name
+// console.log(req.body, req.files); // pluaralized file when setting changed from single to array
+// });
 
 //? Video 412 new.ejs, Create New campground - Form. MUST HAVE NEW ROUTE ABOVE ROUTE ID
 router.get("/new", isLoggedIn, campgrounds.renderNewForm);
