@@ -27,7 +27,12 @@ const seedDB = async () => {
       title: `${sample(descriptors)} ${sample(places)}`,
       //? VIDEO 427 Adding Images (modified model to match)
       // image: "https://source.unsplash.com/collection/483251",
-      image: "https://source.unsplash.com/collection/483251",
+      images: [
+        {
+          url: "https://res.cloudinary.com/dpmninzv7/image/upload/v1647452902/YelpCamp/nguebxxxdjcwl2anx5nj.jpg",
+          filename: "YelpCamp/nguebxxxdjcwl2anx5nj",
+        },
+      ],
       description:
         " Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque velit, nemo maiores nesciunt voluptas perferendis cupiditate quia facere! Quas modi ullam rem quos enim voluptates? Natus assumenda alias architecto culpa.",
       price,
