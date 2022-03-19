@@ -1,5 +1,6 @@
 //* 526 REFACTORING TO CAMPGROUNDS CONTROLLER
 const Campground = require("../models/campground");
+const { cloudinary } = require("../cloudinary"); //import cloudinary object to delete images from cloudinary
 
 module.exports.index = async (req, res) => {
   const campgrounds = await Campground.find({});
@@ -74,6 +75,16 @@ module.exports.updateCampground = async (req, res) => {
 
   campground.images.push(...imgs); // push data from array (not array itself) & to not ovewrite and to pass mongoose validation
   await campground.save();
+  if (req.body.deleteImages) {
+    for (let filename of req.body.deleteImages) {
+      await cloudinary.uploader.destroy(filename); //to destroy filename, destroy = cloudinary method
+    }
+    await campground.updateOne({
+      //Query mongodb: to delete image in array that matches filename in deleteImages
+      $pull: { images: { filename: { $in: req.body.deleteImages } } },
+    });
+    console.log(campground);
+  }
   //* Video 494 Flash Success partial - flash update msg
   req.flash("success", "Successfully updated the campground");
   res.redirect(`/campgrounds/${campground._id}`);
