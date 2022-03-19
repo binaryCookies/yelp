@@ -10,14 +10,21 @@ const Schema = mongoose.Schema;
 // video 471
 const Review = require("./review");
 
+const ImageSchema = new Schema({
+  //to setup virtual (which means not storing to db) property to each image, change uri so cludinary can crop images to thumbnails
+  url: String,
+  filename: String,
+});
+
+// https://res.cloudinary.com/dpmninzv7/image/upload/v1647701336/YelpCamp/vkva0tqvj7ghxulgcyvx.jpg //to reference cloudinary url format
+
+ImageSchema.virtual("thumbnail").get(function () {
+  return this.url.replace("/upload", "/upload/w_200"); //to replace path with width dimension
+});
+
 const CampgroundSchema = new Schema({
   title: String,
-  images: [
-    {
-      url: String,
-      filename: String,
-    },
-  ],
+  images: [ImageSchema],
   price: Number,
   description: String,
   location: String,
