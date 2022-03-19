@@ -62,6 +62,7 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateCampground = async (req, res) => {
   const { id } = req.params;
+  console.log(req.body); //Video 542: to see whats going on with delete checkbox data
   const campground = await Campground.findByIdAndUpdate(id, {
     ...req.body.campground,
   });

@@ -28,7 +28,7 @@ const { isLoggedIn, isAuthor, validateCampground } = require("../middleware");
 // const ExpressError = require("../utils/ExpressError");
 const campgrounds = require("../controllers/campgrounds");
 //VIDEO 532 THE MULTER MIDDLEWARE
-const multer = require("multer");
+const multer = require("multer"); // to add body and file or files object - primarily to upload files
 //VIDEO 535 UPLOADING CLOUDINARY BASICS
 const { storage } = require("../cloudinary");
 const upload = multer({ storage }); //destination and path, changed to storage object created VIDEO 535

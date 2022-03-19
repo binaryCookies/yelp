@@ -23,7 +23,7 @@ module.exports.isLoggedIn = (req, res, next) => {
 
 //?525 AUTHORIZATION MIDDLEWARE { id, reviewId } -> redirect using id, find review using reviewId
 module.exports.isReviewAuthor = async (req, res, next) => {
-  const { id, reviewId } = req.params; // Video 525 - reviewId as per delete route path
+  const { id, reviewId } = req.params; // property of :id and :reviewId. Video 525 - reviewId as per delete route path
   const review = await Review.findById(reviewId); // 525 - Step 1 find review by id
   if (!review.author.equals(req.user._id)) {
     req.flash("error", "You do not have permission to do that");

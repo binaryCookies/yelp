@@ -1,6 +1,6 @@
 //? VIDEO 447. Joi Validation Middleware
 const { required } = require("joi");
-const Joi = require("joi");
+const Joi = require("joi"); //web form client side validation
 
 module.exports.campgroundSchema = Joi.object({
   campground: Joi.object({
@@ -10,6 +10,7 @@ module.exports.campgroundSchema = Joi.object({
     location: Joi.string().required(),
     description: Joi.string().required(),
   }).required(),
+  deleteImages: Joi.array(), //Video 542 to delete images
 });
 
 //? VIDEO 467 Validating REviews

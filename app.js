@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== "production") {
 
 //* Express
 const express = require("express");
-const path = require("path");
+const path = require("path"); // to work with directory paths
 const app = express();
 const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
@@ -28,7 +28,7 @@ const Campground = require("./models/campground");
 const Review = require("./models/review");
 
 //* Video 489 Configuring Session
-const session = require("express-session");
+const session = require("express-session"); // to be able to  access session data or store server side
 
 //*Video 490 Setting Up Flash
 const flash = require("connect-flash");
