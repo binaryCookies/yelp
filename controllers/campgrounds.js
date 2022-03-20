@@ -1,6 +1,9 @@
 //* 526 REFACTORING TO CAMPGROUNDS CONTROLLER
 const Campground = require("../models/campground");
 const { cloudinary } = require("../cloudinary"); //import cloudinary object to delete images from cloudinary
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding"); //create geocoding client service
+const mapBoxToken = process.env.MAPBOX_TOKEN; //access our MAPBOX_TOKEN
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken }); //Pass in our Token - Creating Clients: https://github.com/mapbox/mapbox-sdk-js
 
 module.exports.index = async (req, res) => {
   const campgrounds = await Campground.find({});
@@ -11,18 +14,27 @@ module.exports.renderNewForm = (req, res) => {
   res.render("campgrounds/new");
 };
 module.exports.createCampground = async (req, res, next) => {
-  const campground = new Campground(req.body.campground);
-  //  res.send(req.body); // testing post route
-  campground.images = req.files.map((f) => ({
-    url: f.path,
-    filename: f.filename,
-  })); //VIDEO 536 - map over array in req object provided from multer save filenames and path of images uploaded
-  campground.author = req.user._id; // VIDEO 520 Adding Author to Campground
-  await campground.save();
-  console.log(campground);
-  // Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
-  req.flash("success", "Successfully made a new campground");
-  return res.redirect(`/campgrounds/${campground._id}`);
+  const geoData = await geocoder
+    .forwardGeocode({
+      //config object
+      query: req.body.campground.location, //retreive input from campground form (stored as campground.location)
+      limit: 1,
+    })
+    .send();
+  res.send(geoData.body.features[0].geometry.coordinates);
+
+  // const campground = new Campground(req.body.campground);
+  // //  res.send(req.body); // testing post route
+  // campground.images = req.files.map((f) => ({
+  //   url: f.path,
+  //   filename: f.filename,
+  // })); //VIDEO 536 - map over array in req object provided from multer save filenames and path of images uploaded
+  // campground.author = req.user._id; // VIDEO 520 Adding Author to Campground
+  // await campground.save();
+  // console.log(campground);
+  // // Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
+  // req.flash("success", "Successfully made a new campground");
+  // return res.redirect(`/campgrounds/${campground._id}`);
   // console.dir(req);
   // console.log(req.body.campground);
 };
