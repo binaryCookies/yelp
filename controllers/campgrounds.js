@@ -21,20 +21,20 @@ module.exports.createCampground = async (req, res, next) => {
       limit: 1,
     })
     .send();
-  res.send(geoData.body.features[0].geometry.coordinates);
 
-  // const campground = new Campground(req.body.campground);
-  // //  res.send(req.body); // testing post route
-  // campground.images = req.files.map((f) => ({
-  //   url: f.path,
-  //   filename: f.filename,
-  // })); //VIDEO 536 - map over array in req object provided from multer save filenames and path of images uploaded
-  // campground.author = req.user._id; // VIDEO 520 Adding Author to Campground
-  // await campground.save();
-  // console.log(campground);
-  // // Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
-  // req.flash("success", "Successfully made a new campground");
-  // return res.redirect(`/campgrounds/${campground._id}`);
+  const campground = new Campground(req.body.campground);
+  campground.geometry = geoData.body.features[0].geometry; //to store in our campground
+  //  res.send(req.body); // testing post route
+  campground.images = req.files.map((f) => ({
+    url: f.path,
+    filename: f.filename,
+  })); //VIDEO 536 - map over array in req object provided from multer save filenames and path of images uploaded
+  campground.author = req.user._id; // VIDEO 520 Adding Author to Campground
+  await campground.save();
+  console.log(campground);
+  // Video 493 Setting up Flash - added to our template to display flash msg - defined a middleware in app.js
+  req.flash("success", "Successfully made a new campground");
+  return res.redirect(`/campgrounds/${campground._id}`);
   // console.dir(req);
   // console.log(req.body.campground);
 };

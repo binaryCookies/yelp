@@ -25,6 +25,18 @@ ImageSchema.virtual("thumbnail").get(function () {
 const CampgroundSchema = new Schema({
   title: String,
   images: [ImageSchema],
+  geometry: {
+    //to accept geoJSON data as per mongoose docs and used by: mongoDB, mapBox
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
   price: Number,
   description: String,
   location: String,
