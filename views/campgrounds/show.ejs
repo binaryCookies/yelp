@@ -180,7 +180,8 @@ title and text %> <%- layout('layouts/boilerplate') %>
 
 <script>
   const mapToken = "<%-process.env.MAPBOX_TOKEN%>";
+  const campground = <%-JSON.stringify(campground)%>;
 </script>
-//to access token and run as ejs
+
+<%#to link script - this file requires ejs to work%>
 <script src="/javascripts/showPageMap.js"></script>
-//to link script - this file requires ejs to work

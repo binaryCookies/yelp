@@ -58,6 +58,7 @@ router
     validateCampground,
     catchAsync(campgrounds.updateCampground)
   )
+
   .delete(isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCampground));
 
 //? VIDEO 413 - Route Edit.ejs: edit and update, 522 Campground Permissions (server side, prevent get edit page request from postman etc )
