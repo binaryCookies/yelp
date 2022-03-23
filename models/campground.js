@@ -10,6 +10,8 @@ const Schema = mongoose.Schema;
 // video 471
 const Review = require("./review");
 
+const opts = { toJSON: { virtuals: true } }; // VIDEO 558. to include virtuals from documents converted to JSON
+
 const ImageSchema = new Schema({
   //to setup virtual (which means not storing to db) property to each image, change uri so cludinary can crop images to thumbnails
   url: String,
@@ -22,44 +24,55 @@ ImageSchema.virtual("thumbnail").get(function () {
   return this.url.replace("/upload", "/upload/w_200"); //to replace path with width dimension
 });
 
-const CampgroundSchema = new Schema({
-  title: String,
-  images: [ImageSchema],
-  geometry: {
-    //to accept geoJSON data as per mongoose docs and used by: mongoDB, mapBox
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
+const CampgroundSchema = new Schema(
+  {
+    title: String,
+    images: [ImageSchema],
+    geometry: {
+      //to accept geoJSON data as per mongoose docs and used by: mongoDB, mapBox
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
     },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
-  },
-  price: Number,
-  description: String,
-  location: String,
-  // VIDEO 519 Adding an Author - update seeds index file to include author field
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
-  // VIDEO 464 Review model of one to many
-  reviews: [
-    {
+    price: Number,
+    description: String,
+    location: String,
+    // VIDEO 519 Adding an Author - update seeds index file to include author field
+    author: {
       type: Schema.Types.ObjectId,
-      ref: "Review",
+      ref: "User",
     },
-  ],
-});
-//*************
-//? Video 471 Campground delete middleware (delete reviews asociated with the campground when a campground is deleted)
-//? app.js delete route: findByIdAndDelete triggers findOneAndDelete mongoose middleware
+    // VIDEO 464 Review model of one to many
+    reviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+  },
+  opts // video 558 so MOngoose includes virtuals from documents converted to JSON
+);
+
+// Video 471 Campground delete middleware (delete reviews asociated with the campground when a campground is deleted)
+// app.js delete route: findByIdAndDelete triggers findOneAndDelete mongoose middleware
 // CampgroundSchema.post("findOneAndDelete", async function () {
-//   // console.log("deleted"); // check if delete campground midleware ran
-//   //? Step 2 How to check contents of what is deleted -add(doc) as parameter to function
+// console.log("deleted"); // check if delete campground midleware ran
+//  Step 2 How to check contents of what is deleted -add(doc) as parameter to function
 // });
+
+CampgroundSchema.virtual("properties.popUpMarkup").get(function () {
+  // chain properties to nest popUpMarkup in properties, substring = truncate text
+  return `<strong><a href="/campgrounds/${this._id}">${this.title}</a></strong>
+  <p>
+  ${this.description.substring(0, 20)}... 
+  </p>`; //Video 558 add properties to mapBox
+});
 
 CampgroundSchema.post("findOneAndDelete", async function (doc) {
   //? How to check wontents of what is deleted -add(doc as parameter to function)
