@@ -92,7 +92,8 @@ map.on("load", () => {
   // the location of the feature, with
   // description HTML from its properties.
   map.on("click", "unclustered-point", (e) => {
-    const text = e.features[0].properties.popUpMarkup;
+    const { popUpMarkup } = e.features[0].properties;
+    // console.log(e.features[0]);
     const coordinates = e.features[0].geometry.coordinates.slice(); //modified video 558. virtuals and access properties in campgrounds
 
     // Ensure that if the map is zoomed out such that
@@ -104,7 +105,7 @@ map.on("load", () => {
 
     new mapboxgl.Popup()
       .setLngLat(coordinates)
-      .setHTML(text) //video 558 - to pass in popUpMarkup -> const text = e.features[0].properties.popUpMarkup;
+      .setHTML(popUpMarkup) //video 558 - to pass in popUpMarkup -> const {popUpMarkup} = e.features[0].properties
       .addTo(map);
   });
 
