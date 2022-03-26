@@ -1,26 +1,45 @@
 <%# VIDEO 514 LOGIN ROUTES %> <% layout('layouts/boilerplate') %>
-<h1>LOGIN</h1>
-<form action="/login" method="POST" class="validated-form" novalidate>
-  <div class="mb-3">
-    <label class="form-label" for="username">Username</label>
-    <input
-      class="form-control"
-      type="text"
-      id="username"
-      name="username"
-      required
-    />
-  </div>
 
-  <div class="mb-3">
-    <label class="form-label" for="password">Password</label>
-    <input
-      class="form-control"
-      type="password"
-      id="password"
-      name="password"
-      required
-    />
+<div class="container d-flex justify-content-center align-items-center mt-5">
+  <div class="row flex-fill">
+    <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+      <div class="card shadow">
+        <img
+          src="https://source.unsplash.com/y8Ngwq34_Ak"
+          alt=""
+          class="card-img-top"
+        />
+        <div class="card-body">
+          <h5 class="card-title">Login</h5>
+          <form action="/login" method="POST" class="validated-form" novalidate>
+            <div class="mb-3">
+              <label class="form-label" for="username">Username</label>
+              <input
+                class="form-control"
+                type="text"
+                id="username"
+                name="username"
+                autofocus
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="password">Password</label>
+              <input
+                class="form-control"
+                type="password"
+                id="password"
+                name="password"
+                required
+              />
+            </div>
+            <div class="d-grid gap-2">
+              <button class="btn btn-success">LOGIN</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
-  <button class="btn btn-success">LOGIN</button>
-</form>
+</div>
