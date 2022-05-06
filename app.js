@@ -70,10 +70,23 @@ const User = require("./models/user");
 //* VIDEO 571 USING HELMET - Express middleware to secure express apps by setting various HTTP headers
 const helmet = require("helmet");
 
-//* VIDEO 573 SETTING UP MONGO ATLAS
-// const dbURL = process.env.DB_URL;
+//* VIDEO 574 USING MONGO FOR OUR SESSION STORE - npm mongo-connect
+const MongoStore = require("connect-mongo");
 
-mongoose.connect("mongodb://localhost:27017/yelp-camp");
+//* VIDEO 573 SETTING UP MONGO ATLAS
+const dbURL = "mongodb://localhost:27017/yelp-camp";
+
+mongoose.connect(dbURL);
+
+//* VIDEO 574 USING MONGO FOR OUR SESSION STORE - updated since video - see following relies for bookmarked solution
+const store = MongoStore.create({
+  mongoUrl: dbURL,
+  secret: "thisshoulbeabettersecret",
+  touchAfter: 24 * 60 * 60,
+});
+store.on("error", function (e) {
+  console.log("SESSION STORE ERROR", e);
+});
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -81,7 +94,7 @@ db.once("open", () => {
   console.log("DATABASE CONNECTED");
 });
 
-//*VIDEO 566 MONGO INJECTION - database protection - NPM package
+//*VIDEO 566 MONGO INJECTION - database protection - NPM package express-mongo-sanitize
 const mongoSanitize = require("express-mongo-sanitize");
 
 //* VIDEO 412 new.ejs - New and Create Submit Form. Express, Method-Override middleware.
@@ -97,6 +110,7 @@ app.use(mongoSanitize());
 
 //* VIDEO 489 Configuring Sesssion - passing in config object, config will change after development on deployment, we wont use local store after development rather mongodb store
 const sessionConfig = {
+  store: store, // added in video 574 using mongo for our session store
   name: "session", //changes default name from conect.sid to make it harder to find by xscript hacker
   secret: "thisshoulbeabettersecret",
   resave: false,
