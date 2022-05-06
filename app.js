@@ -17,6 +17,8 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+// require("dotenv").config(); //Video 570 mute above to not show stack trace
+
 // console.log(process.env.CLOUDINARY_CLOUD_NAME);
 
 //* Express
