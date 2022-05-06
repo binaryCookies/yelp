@@ -6,6 +6,7 @@
 
 //* Required below as of VIDEO 523 AUTHORIZATION MIDDLEWARE
 const { campgroundSchema, reviewSchema } = require("./schemas.js"); // JOI validations
+const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
 const Review = require("./models/review");
 
