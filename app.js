@@ -17,6 +17,7 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+
 // require("dotenv").config(); //Video 570 mute above to not show stack trace
 
 // console.log(process.env.CLOUDINARY_CLOUD_NAME);
@@ -69,16 +70,19 @@ const User = require("./models/user");
 //* VIDEO 571 USING HELMET - Express middleware to secure express apps by setting various HTTP headers
 const helmet = require("helmet");
 
-mongoose.connect("mongodb://localhost:27017/yelp-camp");
+//* VIDEO 573 SETTING UP MONGO ATLAS
+// const dbURL = process.env.DB_URL;
 
-//*VIDEO 566 MONGO INJECTION - database protection - NPM package
-const mongoSanitize = require("express-mongo-sanitize");
+mongoose.connect("mongodb://localhost:27017/yelp-camp");
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", () => {
   console.log("DATABASE CONNECTED");
 });
+
+//*VIDEO 566 MONGO INJECTION - database protection - NPM package
+const mongoSanitize = require("express-mongo-sanitize");
 
 //* VIDEO 412 new.ejs - New and Create Submit Form. Express, Method-Override middleware.
 app.use(express.urlencoded({ extended: true }));
@@ -113,6 +117,7 @@ app.use(session(sessionConfig));
 //*Video 493 Setting Up Flash - added flash to routes -> campgrounds.js in creating new campgrounds
 app.use(flash());
 //*Video 571 Helmet express midddleware
+
 const scriptSrcUrls = [
   "https://stackpath.bootstrapcdn.com/",
   "https://api.tiles.mapbox.com/",
@@ -133,10 +138,12 @@ const styleSrcUrls = [
   "https://res.cloudinary.com/dpmninzv7/",
 ];
 const connectSrcUrls = [
-  "https://*.tiles.mapbox.com",
+  "https://a.tiles.mapbox.com",
+  "https://b.tiles.mapbox.com",
   "https://api.mapbox.com",
   "https://events.mapbox.com",
   "https://res.cloudinary.com/dpmninzv7/",
+  "https://source.images.unsplash.com/",
 ];
 const fontSrcUrls = ["https://res.cloudinary.com/dpmninzv7/"];
 app.use(
@@ -154,6 +161,8 @@ app.use(
         "data:",
         "https://res.cloudinary.com/dpmninzv7/",
         "https://images.unsplash.com/",
+        "https://source.unsplash.com/y8Ngwq34_Ak",
+        "https://source.unsplash.com/ESNV6KmLJMg",
       ],
       fontSrc: ["'self'", ...fontSrcUrls],
       mediaSrc: ["https://res.cloudinary.com/dpmninzv7/"],
