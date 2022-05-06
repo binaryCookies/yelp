@@ -12,6 +12,7 @@
 //* 532 THE MULTER MIDDLEWARE - At new form setting for to have enctype="multipart/form-data" (url-endoded won't work to upload images), add new input - muted old image input, go to where form is submittd - campgrounds post route, testing post route with res.send req.body, adding express.js/multer middleware to parse enctype="multipart/form-data", from Multer docs adding: const multer  = require('multer'), const upload = multer({ dest: 'uploads/' }) to route, tested route w/ console.log(req.body, req.file), camprground post route changed single('image') to array('image), new form input image added attribute multiple,
 //*Multer adds a body object and a file or files object to the request object. The body object contains the values of the text fields of the form, the file or files object contains the files uploaded via the form
 //* VIDEO 566 Mongo Injection - added npm package express-mongo-sanitize - deletes $ and .dots from user inputs
+//* VIDEO 575 HEROKU SETUP - INSTALLED HEROKU ON LAPTOP
 
 //VIDEO 534 ENVIRONMENT VARIABLES WITH dotenv: DOTENV - npm package - HOW TO ACCESS THE .env file from other files (kept in node environment during development phase)
 if (process.env.NODE_ENV !== "production") {
