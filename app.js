@@ -11,6 +11,7 @@
 //* VIDEO 531 INTRO TO UPLOAD IMAGE PROCESS - we're using cloudinary alternative is GridFS, AWS.
 //* 532 THE MULTER MIDDLEWARE - At new form setting for to have enctype="multipart/form-data" (url-endoded won't work to upload images), add new input - muted old image input, go to where form is submittd - campgrounds post route, testing post route with res.send req.body, adding express.js/multer middleware to parse enctype="multipart/form-data", from Multer docs adding: const multer  = require('multer'), const upload = multer({ dest: 'uploads/' }) to route, tested route w/ console.log(req.body, req.file), camprground post route changed single('image') to array('image), new form input image added attribute multiple,
 //*Multer adds a body object and a file or files object to the request object. The body object contains the values of the text fields of the form, the file or files object contains the files uploaded via the form
+//* VIDEO 566 Mongo Injection - added npm package express-mongo-sanitize - deletes $ and .dots from user inputs
 
 //VIDEO 534 ENVIRONMENT VARIABLES WITH dotenv: DOTENV - npm package - HOW TO ACCESS THE .env file from other files (kept in node environment during development phase)
 if (process.env.NODE_ENV !== "production") {
@@ -65,6 +66,9 @@ const User = require("./models/user");
 
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
 
+//*VIDEO 566 MONGO INJECTION - database protection - NPM package
+const mongoSanitize = require("express-mongo-sanitize");
+
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", () => {
@@ -79,6 +83,8 @@ app.use(methodOverride("_method"));
 
 //* VIDEO 488 Serving Static Assets - creating public directory
 app.use(express.static(path.join(__dirname, "public")));
+//* VIDEO 566 MONGO INJECTION - To remove data using these defaults: By default, $ and . characters are removed completely
+app.use(mongoSanitize());
 
 //* VIDEO 489 Configuring Sesssion - passing in config object, config will change after development on deployment, we wont use local store after development rather mongodb store
 const sessionConfig = {
@@ -113,6 +119,7 @@ passport.deserializeUser(User.deserializeUser()); // unstore in session
 app.use((req, res, next) => {
   // VIDEO 517 currentUser Helper - in all templates we now have access to currentUser - go to navbar.ejs to display buttons if there is a currentUser
   // console.log(req.session); // VIDEO 519 print session
+  console.log(req.query);
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   // Video 495 Flash Errors Partial
