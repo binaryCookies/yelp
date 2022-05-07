@@ -75,14 +75,16 @@ const helmet = require("helmet");
 const MongoStore = require("connect-mongo");
 
 //* VIDEO 573 SETTING UP MONGO ATLAS
-const dbURL = "mongodb://localhost:27017/yelp-camp";
+const dbURL = process.env.DB_URL || "mongodb://localhost:27017/yelp-camp";
 
 mongoose.connect(dbURL);
+
+const secret = process.env.SECRET || "thisshoulbeabettersecret";
 
 //* VIDEO 574 USING MONGO FOR OUR SESSION STORE - updated since video - see following relies for bookmarked solution
 const store = MongoStore.create({
   mongoUrl: dbURL,
-  secret: "thisshoulbeabettersecret",
+  secret: secret,
   touchAfter: 24 * 60 * 60,
 });
 store.on("error", function (e) {
@@ -113,7 +115,7 @@ app.use(mongoSanitize());
 const sessionConfig = {
   store: store, // added in video 574 using mongo for our session store
   name: "session", //changes default name from conect.sid to make it harder to find by xscript hacker
-  secret: "thisshoulbeabettersecret",
+  secret: secret, // changed VIDEO 576 pushing to heroku  - also changed in secret variable
   resave: false,
   saveUninitialized: true,
   //  Explainer: Date.now in millieseconds 1000 milleseconds in a second, 60 seconds in a minute, 60 minutes in an hour, 24 hours per day, 7 days per week
