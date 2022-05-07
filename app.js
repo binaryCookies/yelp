@@ -180,6 +180,7 @@ app.use(
         "https://images.unsplash.com/",
         "https://source.unsplash.com/y8Ngwq34_Ak",
         "https://source.unsplash.com/ESNV6KmLJMg",
+        "https://source.unsplash.com/63Znf38gnXk",
       ],
       fontSrc: ["'self'", ...fontSrcUrls],
       mediaSrc: ["https://res.cloudinary.com/dpmninzv7/"],
